@@ -4,82 +4,137 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ВСРП - Билеты на Байкал</title>
-    
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
-        /* Используем переменные цветов самого Telegram, чтобы подстраиваться под темную/светлую тему пользователя */
         body {
-            background-color: var(--tg-theme-bg-color, #ffffff);
+            /* Базовые цвета берем из темы пользователя */
+            background-color: var(--tg-theme-bg-color, #f4f4f5);
             color: var(--tg-theme-text-color, #000000);
             font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
             margin: 0;
+            padding: 20px;
         }
 
         .header {
-            font-size: 24px;
+            text-align: center;
+            font-size: 22px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
         .subtitle {
+            text-align: center;
             font-size: 14px;
             color: var(--tg-theme-hint-color, #999999);
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
-        button {
-            /* Кнопка тоже берет цвет из настроек Телеграма */
+        /* Контейнер для списка карточек */
+        .tickets-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Дизайн самой карточки билета */
+        .card {
+            background-color: var(--tg-theme-secondary-bg-color, #ffffff);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .card-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .card-desc {
+            font-size: 14px;
+            color: var(--tg-theme-hint-color, #666666);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .card-price {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--tg-theme-button-color, #3390ec);
+            margin-bottom: 15px;
+        }
+
+        .select-btn {
             background-color: var(--tg-theme-button-color, #3390ec);
             color: var(--tg-theme-button-text-color, #ffffff);
             border: none;
-            padding: 15px 30px;
-            border-radius: 10px;
+            padding: 12px;
+            border-radius: 8px;
             font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
             width: 100%;
-            font-weight: bold;
         }
 
-        button:active {
+        .select-btn:active {
             opacity: 0.8;
         }
     </style>
 </head>
 <body>
 
-    <div class="header">Добро пожаловать на борт! 🚢</div>
-    <div id="user-greeting" class="subtitle">Загрузка данных...</div>
+    <div class="header">Билеты ВСРП ⚓️</div>
+    <div id="greeting" class="subtitle">Куда отправимся?</div>
 
-    <button id="main-btn">Посмотреть маршруты</button>
+    <div class="tickets-list">
+        <div class="card">
+            <div class="card-header">🚢 Теплоход «Баргузин»</div>
+            <div class="card-desc">Иркутск — Большие Коты. Быстрый маршрут по Ангаре с выходом в Байкал.</div>
+            <div class="card-price">1 500 ₽</div>
+            <button class="select-btn" onclick="selectTicket('Теплоход Баргузин', 1500)">Выбрать маршрут</button>
+        </div>
+
+        <div class="card">
+            <div class="card-header">🛸 Хивус-10 (Лед Байкала)</div>
+            <div class="card-desc">Листвянка — Песчаная Бухта. Зимняя экскурсия на судне на воздушной подушке.</div>
+            <div class="card-price">6 000 ₽</div>
+            <button class="select-btn" onclick="selectTicket('Хивус-10', 6000)">Выбрать маршрут</button>
+        </div>
+    </div>
 
     <script>
-        // Инициализируем объект Web App
         let tg = window.Telegram.WebApp;
+        tg.expand(); // Открываем приложение на весь экран
 
-        // Расширяем приложение на всю высоту экрана
-        tg.expand();
-
-        // Достаем имя пользователя прямо из Телеграма!
+        // Пытаемся получить имя
         let user = tg.initDataUnsafe?.user;
-        let greetingElement = document.getElementById('user-greeting');
+        let greetingElement = document.getElementById('greeting');
         
-        if (user) {
-            greetingElement.innerText = `Привет, ${user.first_name}! Куда отправимся?`;
-        } else {
-            greetingElement.innerText = "Привет, путешественник! Куда отправимся?";
+        if (user && user.first_name) {
+            greetingElement.innerText = `Куда отправимся, ${user.first_name}?`;
         }
 
-        // Вешаем событие на нашу кнопку
-        document.getElementById('main-btn').addEventListener('click', function() {
-            // Встроенное всплывающее окно Телеграма
-            tg.showAlert("Тут мы скоро выведем список рейсов ВСРП!");
-        });
+        // Функция выбора билета
+        function selectTicket(shipName, price) {
+            // Настраиваем системную кнопку Телеграма
+            tg.MainButton.text = `КУПИТЬ БИЛЕТ ЗА ${price} ₽`;
+            tg.MainButton.show(); // Показываем её внизу
 
-        // Сообщаем Телеграму, что приложение готово к отображению
-        tg.ready();
+            // Что произойдет, если нажать на эту нижнюю кнопку
+            tg.MainButton.onClick(function() {
+                // Собираем данные в JSON
+                let data = JSON.stringify({ 
+                    item: shipName, 
+                    price: price 
+                });
+                
+                // Отправляем данные в нашего Python-бота и закрываем окно!
+                tg.sendData(data); 
+            });
+        }
+
+        tg.ready(); // Сообщаем мессенджеру, что мы загрузились
     </script>
 </body>
 </html>
