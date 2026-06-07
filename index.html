@@ -3,138 +3,1225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ВСРП - Билеты на Байкал</title>
+    <title>ВСРП — Билеты на речные рейсы</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        body {
-            /* Базовые цвета берем из темы пользователя */
-            background-color: var(--tg-theme-bg-color, #f4f4f5);
-            color: var(--tg-theme-text-color, #000000);
-            font-family: Arial, sans-serif;
+        :root {
+            /* Фирменная палитра Восточно-Сибирского речного пароходства */
+            --vsrp-blue: #004789;
+            --vsrp-blue-dark: #003366;
+            --vsrp-light: #f4f8fd;
+            --vsrp-accent: #ff7a00;
+            --vsrp-accent-hover: #e66d00;
+            --text-dark: #1a1a1a;
+            --text-gray: #6b7280;
+            --glass-bg: rgba(255, 255, 255, 0.72);
+            --glass-border: rgba(255, 255, 255, 0.45);
+            --shadow-sm: 0 4px 16px rgba(0, 71, 137, 0.08);
+            --shadow-md: 0 8px 32px rgba(0, 71, 137, 0.12);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.15);
+            --radius-sm: 12px;
+            --radius-md: 20px;
+            --radius-lg: 24px;
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--vsrp-light);
+            color: var(--text-dark);
+            padding-bottom: 90px;
+            min-height: 100vh;
+        }
+
+        /* --- ШАПКА --- */
+        .navbar {
+            background: linear-gradient(135deg, var(--vsrp-blue) 0%, var(--vsrp-blue-dark) 100%);
+            color: white;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-logo {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-logo-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .profile-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transition: background 0.2s, transform 0.15s;
+        }
+
+        .profile-btn:active {
+            transform: scale(0.96);
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .profile-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        /* --- КАТАЛОГ --- */
+        .container {
             padding: 20px;
         }
 
-        .header {
-            text-align: center;
+        .section-title {
             font-size: 22px;
-            font-weight: bold;
-            margin-bottom: 5px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--vsrp-blue);
         }
 
-        .subtitle {
-            text-align: center;
-            font-size: 14px;
-            color: var(--tg-theme-hint-color, #999999);
-            margin-bottom: 25px;
+        .section-subtitle {
+            font-size: 13px;
+            color: var(--text-gray);
+            margin-bottom: 20px;
+            font-weight: 500;
         }
 
-        /* Контейнер для списка карточек */
-        .tickets-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        /* Дизайн самой карточки билета */
-        .card {
-            background-color: var(--tg-theme-secondary-bg-color, #ffffff);
-            border-radius: 12px;
-            padding: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        .card-header {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .card-desc {
-            font-size: 14px;
-            color: var(--tg-theme-hint-color, #666666);
-            margin-bottom: 12px;
-            line-height: 1.4;
-        }
-
-        .card-price {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--tg-theme-button-color, #3390ec);
-            margin-bottom: 15px;
-        }
-
-        .select-btn {
-            background-color: var(--tg-theme-button-color, #3390ec);
-            color: var(--tg-theme-button-text-color, #ffffff);
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
+        .ship-card {
+            background: white;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
-            width: 100%;
+            border: 1px solid rgba(0, 71, 137, 0.06);
         }
 
-        .select-btn:active {
-            opacity: 0.8;
+        .ship-card:active {
+            transform: scale(0.98);
+            box-shadow: var(--shadow-md);
+        }
+
+        .ship-img-wrapper {
+            position: relative;
+            height: 190px;
+        }
+
+        .ship-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .ship-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(0, 71, 137, 0.88);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .ship-content {
+            padding: 18px;
+        }
+
+        .ship-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .ship-route {
+            font-size: 13px;
+            color: var(--text-gray);
+            margin-bottom: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .ship-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #eef2f7;
+            padding-top: 14px;
+        }
+
+        .ship-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--vsrp-accent);
+        }
+
+        .ship-price span {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-gray);
+        }
+
+        .btn-select {
+            background: var(--vsrp-blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-select:active {
+            background: var(--vsrp-blue-dark);
+        }
+
+        /* --- ЭКРАН ДЕТАЛЕЙ --- */
+        #detail-page {
+            display: none;
+            background: var(--vsrp-light);
+            min-height: 100vh;
+        }
+
+        .detail-hero {
+            height: 260px;
+            position: relative;
+        }
+
+        .detail-hero img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .detail-hero-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 36, 68, 0.92) 0%, transparent 100%);
+            padding: 40px 20px 30px;
+            color: white;
+        }
+
+        .detail-hero-title {
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .detail-hero-price {
+            font-weight: 600;
+            margin-top: 6px;
+            font-size: 15px;
+            opacity: 0.9;
+        }
+
+        .detail-body {
+            padding: 24px 20px 40px;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            background: var(--vsrp-light);
+            position: relative;
+            top: -24px;
+        }
+
+        .detail-desc {
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--text-gray);
+            margin-bottom: 24px;
+            background: white;
+            padding: 18px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* --- СХЕМА САЛОНА --- */
+        .deck-container {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 24px 16px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0, 71, 137, 0.08);
+        }
+
+        .deck-title {
+            text-align: center;
+            font-weight: 700;
+            color: var(--vsrp-blue);
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .deck-legend {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+
+        .legend-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px 4px 2px 2px;
+            border: 2px solid #cbd5e1;
+        }
+
+        .legend-dot.free { background: white; }
+        .legend-dot.selected { background: var(--vsrp-accent); border-color: var(--vsrp-accent); }
+        .legend-dot.occupied { background: #f1f5f9; border-color: #e2e8f0; }
+
+        .seat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 36px 1fr 1fr;
+            gap: 10px;
+            justify-items: center;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+
+        .seat {
+            width: 44px;
+            height: 44px;
+            background-color: white;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px 10px 4px 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .seat::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            width: 20px;
+            height: 3px;
+            background: #cbd5e1;
+            border-radius: 2px;
+        }
+
+        .seat.selected {
+            background-color: var(--vsrp-accent);
+            border-color: var(--vsrp-accent);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .seat.selected::after {
+            background: white;
+            opacity: 0.5;
+        }
+
+        .seat.occupied {
+            background-color: #f1f5f9;
+            border-color: #e2e8f0;
+            color: #cbd5e1;
+            cursor: not-allowed;
+            text-decoration: line-through;
+        }
+
+        .seat.occupied::after {
+            background: #e2e8f0;
+        }
+
+        .aisle {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            color: #d1d5db;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        /* --- ЛИЧНЫЙ КАБИНЕТ (ШТОРКА) --- */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 20, 40, 0.5);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .cabinet-drawer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--vsrp-light);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            z-index: 201;
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+            max-height: 88vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .cabinet-drawer.active {
+            transform: translateY(0);
+        }
+
+        .drawer-handle {
+            width: 40px;
+            height: 4px;
+            background: #d1d5db;
+            border-radius: 4px;
+            margin: 12px auto 0;
+        }
+
+        .drawer-header {
+            padding: 16px 20px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .drawer-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--vsrp-blue);
+        }
+
+        .drawer-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            color: var(--text-gray);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.15s;
+        }
+
+        .drawer-close:active {
+            transform: scale(0.92);
+        }
+
+        .drawer-body {
+            padding: 0 20px 32px;
+        }
+
+        /* Карточка профиля */
+        .profile-card {
+            background: linear-gradient(135deg, var(--vsrp-blue) 0%, var(--vsrp-blue-dark) 100%);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            color: white;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .profile-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            overflow: hidden;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .profile-username {
+            font-size: 13px;
+            opacity: 0.75;
+            font-weight: 500;
+        }
+
+        .btn-telegram-login {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #2AABEE;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-telegram-login:active {
+            opacity: 0.85;
+        }
+
+        /* Баланс */
+        .balance-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: 18px 20px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .balance-label {
+            font-size: 13px;
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+
+        .balance-amount {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--vsrp-blue);
+        }
+
+        /* Билеты */
+        .tickets-section {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 18px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tickets-section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--vsrp-blue);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tickets-empty {
+            text-align: center;
+            padding: 28px 16px;
+            color: var(--text-gray);
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .tickets-empty-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .ticket-item {
+            background: var(--vsrp-light);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--vsrp-accent);
+        }
+
+        .ticket-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .ticket-ship {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text-dark);
+        }
+
+        .ticket-meta {
+            font-size: 12px;
+            color: var(--text-gray);
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .ticket-price {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--vsrp-accent);
+            margin-top: 6px;
         }
     </style>
 </head>
 <body>
 
-    <div class="header">Билеты ВСРП ⚓️</div>
-    <div id="greeting" class="subtitle">Куда отправимся?</div>
+    <!-- Шапка с логотипом и кнопкой личного кабинета -->
+    <header class="navbar" id="navbar">
+        <div class="navbar-logo">
+            <div class="navbar-logo-icon">⚓</div>
+            <span>ВСРП</span>
+        </div>
+        <button class="profile-btn" id="profile-btn" aria-label="Личный кабинет">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            <span>Кабинет</span>
+        </button>
+    </header>
 
-    <div class="tickets-list">
-        <div class="card">
-            <div class="card-header">🚢 Теплоход «Баргузин»</div>
-            <div class="card-desc">Иркутск — Большие Коты. Быстрый маршрут по Ангаре с выходом в Байкал.</div>
-            <div class="card-price">1 500 ₽</div>
-            <button class="select-btn" onclick="selectTicket('Теплоход Баргузин', 1500)">Выбрать маршрут</button>
+    <!-- Страница каталога рейсов -->
+    <main id="catalog-page" class="container">
+        <h1 class="section-title">Популярные рейсы</h1>
+        <p class="section-subtitle">Восточно-Сибирское речное пароходство</p>
+
+        <article class="ship-card" data-ship-id="barguzin">
+            <div class="ship-img-wrapper">
+                <span class="ship-badge">ХИТ ПРОДАЖ</span>
+                <img src="https://images.unsplash.com/photo-1544365558-35aa4afcf11f?auto=format&fit=crop&w=800&q=80" alt="Теплоход Баргузин" class="ship-img">
+            </div>
+            <div class="ship-content">
+                <h2 class="ship-title">Теплоход «Баргузин»</h2>
+                <p class="ship-route">📍 Иркутск — Большие Коты</p>
+                <div class="ship-footer">
+                    <div class="ship-price">1 500 ₽ <span>/ место</span></div>
+                    <button class="btn-select">Выбрать</button>
+                </div>
+            </div>
+        </article>
+
+        <article class="ship-card" data-ship-id="hivus">
+            <div class="ship-img-wrapper">
+                <span class="ship-badge" style="background: rgba(255, 122, 0, 0.92);">ЗИМНИЙ ТУР</span>
+                <img src="https://images.unsplash.com/photo-1518182170546-076616fdcbdd?auto=format&fit=crop&w=800&q=80" alt="Хивус-10" class="ship-img">
+            </div>
+            <div class="ship-content">
+                <h2 class="ship-title">Хивус-10 (Лёд Байкала)</h2>
+                <p class="ship-route">📍 Листвянка — Песчаная бухта</p>
+                <div class="ship-footer">
+                    <div class="ship-price">6 000 ₽ <span>/ место</span></div>
+                    <button class="btn-select">Выбрать</button>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <!-- Страница деталей рейса и выбора мест -->
+    <section id="detail-page">
+        <div class="detail-hero">
+            <img id="detail-img" src="" alt="Фото судна">
+            <div class="detail-hero-overlay">
+                <h2 id="detail-title" class="detail-hero-title">Название</h2>
+                <p id="detail-price" class="detail-hero-price">0 ₽</p>
+            </div>
         </div>
 
-        <div class="card">
-            <div class="card-header">🛸 Хивус-10 (Лед Байкала)</div>
-            <div class="card-desc">Листвянка — Песчаная Бухта. Зимняя экскурсия на судне на воздушной подушке.</div>
-            <div class="card-price">6 000 ₽</div>
-            <button class="select-btn" onclick="selectTicket('Хивус-10', 6000)">Выбрать маршрут</button>
+        <div class="detail-body">
+            <p id="detail-desc" class="detail-desc">Описание маршрута...</p>
+
+            <div class="deck-container">
+                <div class="deck-title">СХЕМА САЛОНА</div>
+                <div class="deck-legend">
+                    <span class="legend-item"><span class="legend-dot free"></span> Свободно</span>
+                    <span class="legend-item"><span class="legend-dot selected"></span> Выбрано</span>
+                    <span class="legend-item"><span class="legend-dot occupied"></span> Занято</span>
+                </div>
+                <div id="seat-map" class="seat-grid"></div>
+            </div>
         </div>
-    </div>
+    </section>
+
+    <!-- Оверлей и шторка личного кабинета -->
+    <div class="overlay" id="cabinet-overlay"></div>
+    <aside class="cabinet-drawer" id="cabinet-drawer" role="dialog" aria-label="Личный кабинет">
+        <div class="drawer-handle"></div>
+        <div class="drawer-header">
+            <h2 class="drawer-title">Личный кабинет</h2>
+            <button class="drawer-close" id="drawer-close" aria-label="Закрыть">✕</button>
+        </div>
+        <div class="drawer-body">
+            <!-- Блок профиля: имя из Telegram или кнопка входа -->
+            <div class="profile-card" id="profile-card">
+                <div class="profile-avatar" id="profile-avatar">?</div>
+                <div class="profile-name" id="profile-name">Гость</div>
+                <div class="profile-username" id="profile-username"></div>
+                <button class="btn-telegram-login" id="btn-telegram-login" style="display: none;">
+                    ✈ Войти через Telegram
+                </button>
+            </div>
+
+            <!-- Демо-баланс -->
+            <div class="balance-card">
+                <div>
+                    <div class="balance-label">Баланс счёта</div>
+                    <div class="balance-amount" id="balance-amount">10 000 ₽</div>
+                </div>
+                <span style="font-size: 28px;">💳</span>
+            </div>
+
+            <!-- Список купленных билетов -->
+            <div class="tickets-section">
+                <h3 class="tickets-section-title">🎫 Мои билеты</h3>
+                <div id="tickets-list">
+                    <div class="tickets-empty" id="tickets-empty">
+                        <div class="tickets-empty-icon">🚢</div>
+                        У вас пока нет активных билетов
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
 
     <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand(); // Открываем приложение на весь экран
+        /* ============================================================
+         *  ИНИЦИАЛИЗАЦИЯ TELEGRAM WEB APP API
+         *  Документация: https://core.telegram.org/bots/webapps
+         * ============================================================ */
 
-        // Пытаемся получить имя
-        let user = tg.initDataUnsafe?.user;
-        let greetingElement = document.getElementById('greeting');
-        
-        if (user && user.first_name) {
-            greetingElement.innerText = `Куда отправимся, ${user.first_name}?`;
+        /** @type {Telegram.WebApp} Объект Telegram Mini App */
+        const tg = window.Telegram.WebApp;
+
+        /**
+         * Настраивает внешний вид и поведение Mini App при запуске.
+         * expand() — разворачивает приложение на всю высоту экрана.
+         * setHeaderColor() — красит системную шапку Telegram в фирменный синий.
+         * MainButton.color — задаёт оранжевый цвет главной кнопки покупки.
+         */
+        function initTelegramWebApp() {
+            tg.ready();
+            tg.expand();
+            tg.setHeaderColor('#004789');
+            tg.MainButton.color = '#ff7a00';
+            tg.MainButton.textColor = '#ffffff';
         }
 
-        // Функция выбора билета
-        function selectTicket(shipName, price) {
-            // Настраиваем системную кнопку Телеграма
-            tg.MainButton.text = `КУПИТЬ БИЛЕТ ЗА ${price} ₽`;
-            tg.MainButton.show(); // Показываем её внизу
+        initTelegramWebApp();
 
-            // Что произойдет, если нажать на эту нижнюю кнопку
-            tg.MainButton.onClick(function() {
-                // Собираем данные в JSON
-                let data = JSON.stringify({ 
-                    item: shipName, 
-                    price: price 
+        /* ============================================================
+         *  СОСТОЯНИЕ ПРИЛОЖЕНИЯ
+         * ============================================================ */
+
+        /** Каталог рейсов с ценами и описаниями */
+        const SHIPS = {
+            barguzin: {
+                name: 'Теплоход «Баргузин»',
+                price: 1500,
+                route: 'Иркутск — Большие Коты',
+                desc: 'Быстрый и комфортабельный маршрут из Иркутска до посёлка Большие Коты. Судно на воздушной каверне оснащено удобными креслами самолётного типа, панорамными окнами и кафе-баром на борту. Время в пути — около 1 часа 20 минут.',
+                img: 'https://images.unsplash.com/photo-1544365558-35aa4afcf11f?auto=format&fit=crop&w=800&q=80',
+                occupiedSeats: [3, 8, 11]
+            },
+            hivus: {
+                name: 'Хивус-10 (Лёд Байкала)',
+                price: 6000,
+                route: 'Листвянка — Песчаная бухта',
+                desc: 'Зимняя сказка Байкала. Судно на воздушной подушке безопасно передвигается по прозрачному льду. Внутри салона работает мощный отопитель — вы будете путешествовать в тепле, наблюдая за уникальными ледяными пейзажами.',
+                img: 'https://images.unsplash.com/photo-1518182170546-076616fdcbdd?auto=format&fit=crop&w=800&q=80',
+                occupiedSeats: [2, 5, 9, 14]
+            }
+        };
+
+        /** Демо-баланс пользователя (в рублях) */
+        let userBalance = 10000;
+
+        /** Массив купленных билетов */
+        let purchasedTickets = [];
+
+        /** Текущий выбранный рейс */
+        let currentShipId = '';
+        let currentPrice = 0;
+
+        /** Номера выбранных мест в текущем рейсе */
+        let selectedSeats = [];
+
+        /* ============================================================
+         *  DOM-ЭЛЕМЕНТЫ
+         * ============================================================ */
+
+        const catalogPage = document.getElementById('catalog-page');
+        const detailPage = document.getElementById('detail-page');
+        const navbar = document.getElementById('navbar');
+        const cabinetOverlay = document.getElementById('cabinet-overlay');
+        const cabinetDrawer = document.getElementById('cabinet-drawer');
+        const balanceAmountEl = document.getElementById('balance-amount');
+        const ticketsListEl = document.getElementById('tickets-list');
+        const ticketsEmptyEl = document.getElementById('tickets-empty');
+
+        /* ============================================================
+         *  ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ (Telegram initDataUnsafe)
+         * ============================================================ */
+
+        /**
+         * Загружает данные пользователя из Telegram WebApp.
+         * tg.initDataUnsafe.user содержит first_name, last_name, username, photo_url.
+         * Вне Telegram (браузер / GitHub Pages) user будет undefined — показываем кнопку входа.
+         */
+        function loadTelegramUser() {
+            const user = tg.initDataUnsafe?.user;
+            const avatarEl = document.getElementById('profile-avatar');
+            const nameEl = document.getElementById('profile-name');
+            const usernameEl = document.getElementById('profile-username');
+            const loginBtn = document.getElementById('btn-telegram-login');
+
+            if (user) {
+                const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ');
+                nameEl.textContent = fullName || 'Пользователь Telegram';
+
+                if (user.username) {
+                    usernameEl.textContent = '@' + user.username;
+                } else {
+                    usernameEl.textContent = 'ID: ' + user.id;
+                }
+
+                if (user.photo_url) {
+                    avatarEl.innerHTML = '<img src="' + user.photo_url + '" alt="Аватар">';
+                } else {
+                    avatarEl.textContent = (user.first_name || '?').charAt(0).toUpperCase();
+                }
+
+                loginBtn.style.display = 'none';
+            } else {
+                nameEl.textContent = 'Гость';
+                usernameEl.textContent = 'Войдите через Telegram для персонализации';
+                avatarEl.textContent = '?';
+                loginBtn.style.display = 'inline-flex';
+            }
+        }
+
+        /**
+         * Обработчик кнопки «Войти через Telegram».
+         * В реальном боте здесь можно вызвать tg.openTelegramLink() или OAuth.
+         * В Mini App пользователь уже авторизован при открытии из бота.
+         */
+        function handleTelegramLogin() {
+            tg.showAlert(
+                'Откройте приложение через Telegram-бота ВСРП, чтобы автоматически войти в личный кабинет.'
+            );
+        }
+
+        /* ============================================================
+         *  ЛИЧНЫЙ КАБИНЕТ — ШТОРКА
+         * ============================================================ */
+
+        function openCabinet() {
+            cabinetOverlay.classList.add('active');
+            cabinetDrawer.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCabinet() {
+            cabinetOverlay.classList.remove('active');
+            cabinetDrawer.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        /* ============================================================
+         *  БАЛАНС — СПИСАНИЕ И ОТОБРАЖЕНИЕ
+         * ============================================================ */
+
+        /**
+         * Форматирует число как сумму в рублях с пробелами-разделителями.
+         * @param {number} amount — сумма в рублях
+         * @returns {string} Отформатированная строка, например «10 000 ₽»
+         */
+        function formatRubles(amount) {
+            return amount.toLocaleString('ru-RU') + ' ₽';
+        }
+
+        /**
+         * Обновляет отображение баланса в шторке личного кабинета.
+         */
+        function renderBalance() {
+            balanceAmountEl.textContent = formatRubles(userBalance);
+        }
+
+        /**
+         * Списывает сумму покупки с демо-баланса пользователя.
+         * Возвращает true при успехе, false если средств недостаточно.
+         *
+         * @param {number} amount — сумма к списанию в рублях
+         * @returns {boolean} Успешно ли прошло списание
+         */
+        function deductBalance(amount) {
+            if (amount <= 0) return false;
+            if (userBalance < amount) return false;
+
+            userBalance -= amount;
+            renderBalance();
+            return true;
+        }
+
+        /**
+         * Проверяет, достаточно ли средств на балансе для покупки.
+         * @param {number} amount — требуемая сумма
+         * @returns {boolean}
+         */
+        function hasEnoughBalance(amount) {
+            return userBalance >= amount;
+        }
+
+        /* ============================================================
+         *  БИЛЕТЫ — ДОБАВЛЕНИЕ И ОТОБРАЖЕНИЕ
+         * ============================================================ */
+
+        /**
+         * Добавляет купленный билет в список «Мои билеты».
+         * @param {Object} ticket — { ship, seats, price, date }
+         */
+        function addTicket(ticket) {
+            purchasedTickets.unshift(ticket);
+            renderTickets();
+        }
+
+        /**
+         * Перерисовывает список билетов в личном кабинете.
+         */
+        function renderTickets() {
+            if (purchasedTickets.length === 0) {
+                ticketsListEl.innerHTML = '';
+                ticketsListEl.appendChild(ticketsEmptyEl);
+                ticketsEmptyEl.style.display = 'block';
+                return;
+            }
+
+            ticketsEmptyEl.style.display = 'none';
+            ticketsListEl.innerHTML = purchasedTickets.map(function (ticket) {
+                const seatsStr = ticket.seats.sort(function (a, b) { return a - b; }).join(', ');
+                const dateStr = ticket.date.toLocaleString('ru-RU', {
+                    day: 'numeric',
+                    month: 'long',
+                    hour: '2-digit',
+                    minute: '2-digit'
                 });
-                
-                // Отправляем данные в нашего Python-бота и закрываем окно!
-                tg.sendData(data); 
+
+                return (
+                    '<div class="ticket-item">' +
+                        '<div class="ticket-ship">' + escapeHtml(ticket.ship) + '</div>' +
+                        '<div class="ticket-meta">Места: ' + seatsStr + '<br>Дата: ' + dateStr + '</div>' +
+                        '<div class="ticket-price">' + formatRubles(ticket.price) + '</div>' +
+                    '</div>'
+                );
+            }).join('');
+        }
+
+        /** Экранирует HTML для безопасного вывода */
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        /* ============================================================
+         *  НАВИГАЦИЯ: КАТАЛОГ ↔ ДЕТАЛИ
+         * ============================================================ */
+
+        /**
+         * Открывает страницу деталей рейса и схему салона.
+         * Показывает tg.BackButton для возврата в каталог.
+         */
+        function openShip(shipId) {
+            const ship = SHIPS[shipId];
+            if (!ship) return;
+
+            currentShipId = shipId;
+            currentPrice = ship.price;
+            selectedSeats = [];
+            updateMainButton();
+
+            document.getElementById('detail-title').textContent = ship.name;
+            document.getElementById('detail-price').textContent = formatRubles(ship.price) + ' за 1 пассажира';
+            document.getElementById('detail-desc').textContent = ship.desc;
+            document.getElementById('detail-img').src = ship.img;
+            document.getElementById('detail-img').alt = ship.name;
+
+            generateSeats(ship.occupiedSeats);
+
+            catalogPage.style.display = 'none';
+            navbar.style.display = 'none';
+            detailPage.style.display = 'block';
+
+            tg.BackButton.show();
+        }
+
+        /**
+         * Закрывает страницу деталей и возвращает в каталог.
+         * Скрывает tg.BackButton и tg.MainButton.
+         */
+        function closeDetail() {
+            detailPage.style.display = 'none';
+            catalogPage.style.display = 'block';
+            navbar.style.display = 'flex';
+            selectedSeats = [];
+            tg.BackButton.hide();
+            tg.MainButton.hide();
+        }
+
+        /* ============================================================
+         *  СХЕМА САЛОНА — ГЕНЕРАЦИЯ И ВЫБОР МЕСТ
+         * ============================================================ */
+
+        /**
+         * Генерирует интерактивную сетку мест: 4 ряда × (2 + проход + 2).
+         * @param {number[]} occupiedSeats — номера уже занятых мест
+         */
+        function generateSeats(occupiedSeats) {
+            const seatMap = document.getElementById('seat-map');
+            seatMap.innerHTML = '';
+
+            let seatNumber = 1;
+            for (let row = 0; row < 4; row++) {
+                for (let col = 0; col < 5; col++) {
+                    if (col === 2) {
+                        const aisle = document.createElement('div');
+                        aisle.className = 'aisle';
+                        aisle.textContent = row === 1 ? '↕' : '';
+                        seatMap.appendChild(aisle);
+                        continue;
+                    }
+
+                    const seat = document.createElement('div');
+                    seat.className = 'seat';
+                    seat.textContent = seatNumber;
+
+                    if (occupiedSeats.includes(seatNumber)) {
+                        seat.classList.add('occupied');
+                    } else {
+                        const num = seatNumber;
+                        seat.addEventListener('click', function () {
+                            toggleSeat(seat, num);
+                        });
+                    }
+
+                    seatMap.appendChild(seat);
+                    seatNumber++;
+                }
+            }
+        }
+
+        /**
+         * Переключает выбор места (выбрать / снять выбор).
+         * Обновляет tg.MainButton с актуальной суммой.
+         */
+        function toggleSeat(seatElement, seatNumber) {
+            const index = selectedSeats.indexOf(seatNumber);
+
+            if (index !== -1) {
+                selectedSeats.splice(index, 1);
+                seatElement.classList.remove('selected');
+            } else {
+                selectedSeats.push(seatNumber);
+                seatElement.classList.add('selected');
+            }
+
+            updateMainButton();
+        }
+
+        /**
+         * Показывает или скрывает главную кнопку Telegram (MainButton).
+         * Текст формируется динамически: «КУПИТЬ (X МЕСТ) ЗА Y ₽».
+         * Кнопка видна ТОЛЬКО при выборе хотя бы одного места.
+         */
+        function updateMainButton() {
+            if (selectedSeats.length > 0) {
+                const totalPrice = selectedSeats.length * currentPrice;
+                tg.MainButton.setText(
+                    'КУПИТЬ (' + selectedSeats.length + ' МЕСТ) ЗА ' + totalPrice.toLocaleString('ru-RU') + ' ₽'
+                );
+                tg.MainButton.show();
+            } else {
+                tg.MainButton.hide();
+            }
+        }
+
+        /* ============================================================
+         *  ПОКУПКА БИЛЕТА
+         * ============================================================ */
+
+        /**
+         * Обрабатывает нажатие на tg.MainButton — полный цикл покупки:
+         * 1) Проверка баланса
+         * 2) Списание средств
+         * 3) Добавление билета в «Мои билеты»
+         * 4) Отправка данных в Python-бэкенд через tg.sendData()
+         */
+        function handlePurchase() {
+            const ship = SHIPS[currentShipId];
+            if (!ship || selectedSeats.length === 0) return;
+
+            const totalPrice = selectedSeats.length * currentPrice;
+            const seatsCopy = selectedSeats.slice();
+
+            if (!hasEnoughBalance(totalPrice)) {
+                tg.showAlert('Недостаточно средств. Пополните баланс в личном кабинете.');
+                return;
+            }
+
+            const deducted = deductBalance(totalPrice);
+            if (!deducted) {
+                tg.showAlert('Ошибка списания средств. Попробуйте снова.');
+                return;
+            }
+
+            const ticket = {
+                ship: ship.name,
+                route: ship.route,
+                seats: seatsCopy,
+                price: totalPrice,
+                date: new Date()
+            };
+
+            addTicket(ticket);
+
+            const payload = {
+                action: 'purchase',
+                ship: ship.name,
+                shipId: currentShipId,
+                route: ship.route,
+                seats: seatsCopy,
+                price: totalPrice,
+                pricePerSeat: currentPrice,
+                user: tg.initDataUnsafe?.user || null,
+                timestamp: new Date().toISOString()
+            };
+
+            const successMessage =
+                'Билет оформлен!\n' +
+                ship.name + '\n' +
+                'Места: ' + seatsCopy.join(', ') + '\n' +
+                'Сумма: ' + formatRubles(totalPrice);
+
+            /**
+             * Сначала показываем подтверждение, затем отправляем данные.
+             * tg.sendData() передаёт JSON боту (обработчик web_app_data в Python)
+             * и закрывает Mini App — поэтому вызываем его в колбэке alert.
+             */
+            tg.showAlert(successMessage, function () {
+                tg.sendData(JSON.stringify(payload));
+                closeDetail();
             });
         }
 
-        tg.ready(); // Сообщаем мессенджеру, что мы загрузились
+        /* ============================================================
+         *  TELEGRAM API — ОБРАБОТЧИКИ КНОПОК
+         * ============================================================ */
+
+        /**
+         * tg.BackButton — системная кнопка «Назад» в шапке Telegram.
+         * Появляется при переходе в детали рейса, возвращает в каталог.
+         */
+        tg.BackButton.onClick(function () {
+            closeDetail();
+        });
+
+        /** tg.MainButton — главная кнопка действия внизу экрана Telegram */
+        tg.MainButton.onClick(function () {
+            handlePurchase();
+        });
+
+        /* ============================================================
+         *  ПРИВЯЗКА СОБЫТИЙ UI
+         * ============================================================ */
+
+        document.getElementById('profile-btn').addEventListener('click', openCabinet);
+        document.getElementById('drawer-close').addEventListener('click', closeCabinet);
+        cabinetOverlay.addEventListener('click', closeCabinet);
+        document.getElementById('btn-telegram-login').addEventListener('click', handleTelegramLogin);
+
+        document.querySelectorAll('.ship-card').forEach(function (card) {
+            card.addEventListener('click', function () {
+                openShip(card.dataset.shipId);
+            });
+        });
+
+        /* ============================================================
+         *  СТАРТ ПРИЛОЖЕНИЯ
+         * ============================================================ */
+
+        loadTelegramUser();
+        renderBalance();
+        renderTickets();
     </script>
 </body>
 </html>
