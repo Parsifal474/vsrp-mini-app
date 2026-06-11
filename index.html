@@ -1220,7 +1220,37 @@
          *  СТАРТ ПРИЛОЖЕНИЯ
          * ============================================================ */
 
-        loadTelegramUser();
+        function loadTelegramUser() {
+            // Читаем имя из ссылки
+            const urlParams = new URLSearchParams(window.location.search);
+            const nameFromUrl = urlParams.get('name');
+            
+            const user = tg.initDataUnsafe?.user;
+            const avatarEl = document.getElementById('profile-avatar');
+            const nameEl = document.getElementById('profile-name');
+            const usernameEl = document.getElementById('profile-username');
+            const loginBtn = document.getElementById('btn-telegram-login');
+
+            if (user) {
+                const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ');
+                nameEl.textContent = fullName || 'Пользователь Telegram';
+                if (user.username) usernameEl.textContent = '@' + user.username;
+                if (user.photo_url) avatarEl.innerHTML = '<img src="' + user.photo_url + '" alt="Аватар">';
+                else avatarEl.textContent = (user.first_name || '?').charAt(0).toUpperCase();
+                loginBtn.style.display = 'none';
+            } else if (nameFromUrl) {
+                // Если Телеграм скрыл данные, берем имя, которое передал наш бот
+                nameEl.textContent = nameFromUrl;
+                usernameEl.textContent = 'Авторизован через ВСРП бот';
+                avatarEl.textContent = nameFromUrl.charAt(0).toUpperCase();
+                loginBtn.style.display = 'none';
+            } else {
+                nameEl.textContent = 'Гость';
+                usernameEl.textContent = 'Войдите через Telegram';
+                avatarEl.textContent = '?';
+                loginBtn.style.display = 'inline-flex';
+            }
+        }
         renderBalance();
         renderTickets();
     </script>
