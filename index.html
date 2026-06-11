@@ -839,34 +839,42 @@
          * Вне Telegram (браузер / GitHub Pages) user будет undefined — показываем кнопку входа.
          */
         function loadTelegramUser() {
-            const user = tg.initDataUnsafe?.user;
-            const avatarEl = document.getElementById('profile-avatar');
-            const nameEl = document.getElementById('profile-name');
-            const usernameEl = document.getElementById('profile-username');
-            const loginBtn = document.getElementById('btn-telegram-login');
+            try {
+                // Вытаскиваем имя из ссылки
+                const urlParams = new URLSearchParams(window.location.search);
+                const nameFromUrl = urlParams.get('name');
+                
+                const user = tg.initDataUnsafe?.user;
+                
+                // Ищем элементы на странице
+                const avatarEl = document.getElementById('profile-avatar');
+                const nameEl = document.getElementById('profile-name');
+                const usernameEl = document.getElementById('profile-username');
+                const loginBtn = document.getElementById('btn-telegram-login');
 
-            if (user) {
-                const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ');
-                nameEl.textContent = fullName || 'Пользователь Telegram';
+                // 🛑 ВРЕМЕННЫЙ ДЕБАГ: Раскомментируй строку ниже, если снова будет тупить, 
+                // чтобы увидеть, какие данные реально дошли до сайта:
+                // alert("Ссылка: " + window.location.search + "\nИмя из питона: " + nameFromUrl);
 
-                if (user.username) {
-                    usernameEl.textContent = '@' + user.username;
+                if (nameFromUrl && nameFromUrl !== "null") {
+                    if (nameEl) nameEl.textContent = nameFromUrl;
+                    if (usernameEl) usernameEl.textContent = 'Авторизован через ВСРП бот';
+                    if (avatarEl) avatarEl.textContent = nameFromUrl.charAt(0).toUpperCase();
+                    if (loginBtn) loginBtn.style.display = 'none';
+                } else if (user) {
+                    if (nameEl) nameEl.textContent = user.first_name || 'Пользователь';
+                    if (usernameEl) usernameEl.textContent = user.username ? '@' + user.username : 'Telegram';
+                    if (avatarEl) avatarEl.textContent = (user.first_name || 'U').charAt(0).toUpperCase();
+                    if (loginBtn) loginBtn.style.display = 'none';
                 } else {
-                    usernameEl.textContent = 'ID: ' + user.id;
+                    if (nameEl) nameEl.textContent = 'Гость';
+                    if (usernameEl) usernameEl.textContent = 'Войдите через Telegram';
+                    if (avatarEl) avatarEl.textContent = '?';
+                    if (loginBtn) loginBtn.style.display = 'inline-flex';
                 }
-
-                if (user.photo_url) {
-                    avatarEl.innerHTML = '<img src="' + user.photo_url + '" alt="Аватар">';
-                } else {
-                    avatarEl.textContent = (user.first_name || '?').charAt(0).toUpperCase();
-                }
-
-                loginBtn.style.display = 'none';
-            } else {
-                nameEl.textContent = 'Гость';
-                usernameEl.textContent = 'Войдите через Telegram для персонализации';
-                avatarEl.textContent = '?';
-                loginBtn.style.display = 'inline-flex';
+            } catch (err) {
+                // Если код упадет, он выведет ошибку на экран, а не умрет молча!
+                alert("Бро, у нас ошибка в JS: " + err.message);
             }
         }
 
