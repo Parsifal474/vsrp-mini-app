@@ -9,7 +9,6 @@
 
     <style>
         :root {
-            /* Фирменная палитра Восточно-Сибирского речного пароходства */
             --vsrp-blue: #004789;
             --vsrp-blue-dark: #003366;
             --vsrp-light: #f4f8fd;
@@ -59,7 +58,6 @@
         .navbar-logo {
             font-size: 18px;
             font-weight: 700;
-            letter-spacing: 0.5px;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -74,8 +72,6 @@
             align-items: center;
             justify-content: center;
             font-size: 18px;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
         }
 
         .profile-btn {
@@ -90,579 +86,112 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            transition: background 0.2s, transform 0.15s;
         }
 
-        .profile-btn:active {
-            transform: scale(0.96);
-            background: rgba(255, 255, 255, 0.25);
-        }
-
-        .profile-btn svg {
-            width: 18px;
-            height: 18px;
-            fill: currentColor;
-        }
-
-        /* --- КАТАЛОГ --- */
-        .container {
-            padding: 20px;
-        }
-
-        .section-title {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 6px;
-            color: var(--vsrp-blue);
-        }
-
-        .section-subtitle {
-            font-size: 13px;
-            color: var(--text-gray);
-            margin-bottom: 20px;
-            font-weight: 500;
-        }
-
+        /* --- КАТАЛОГ ДИНАМИЧЕСКИЙ --- */
+        .container { padding: 20px; }
+        .section-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; color: var(--vsrp-blue); }
+        .section-subtitle { font-size: 13px; color: var(--text-gray); margin-bottom: 20px; font-weight: 500; }
+        
         .ship-card {
             background: white;
             border-radius: var(--radius-md);
             overflow: hidden;
             margin-bottom: 20px;
             box-shadow: var(--shadow-sm);
-            transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
             border: 1px solid rgba(0, 71, 137, 0.06);
         }
 
-        .ship-card:active {
-            transform: scale(0.98);
-            box-shadow: var(--shadow-md);
-        }
-
-        .ship-img-wrapper {
-            position: relative;
-            height: 190px;
-        }
-
-        .ship-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
+        .ship-img-wrapper { position: relative; height: 190px; }
+        .ship-img { width: 100%; height: 100%; object-fit: cover; }
         .ship-badge {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            background: rgba(0, 71, 137, 0.88);
-            color: white;
-            padding: 6px 14px;
-            border-radius: 30px;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            position: absolute; top: 12px; left: 12px; background: rgba(0, 71, 137, 0.88);
+            color: white; padding: 6px 14px; border-radius: 30px; font-size: 11px; font-weight: 700;
         }
-
-        .ship-content {
-            padding: 18px;
-        }
-
-        .ship-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .ship-route {
-            font-size: 13px;
-            color: var(--text-gray);
-            margin-bottom: 14px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .ship-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid #eef2f7;
-            padding-top: 14px;
-        }
-
-        .ship-price {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--vsrp-accent);
-        }
-
-        .ship-price span {
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--text-gray);
-        }
-
-        .btn-select {
-            background: var(--vsrp-blue);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-select:active {
-            background: var(--vsrp-blue-dark);
-        }
+        .ship-content { padding: 18px; }
+        .ship-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+        .ship-route { font-size: 13px; color: var(--text-gray); margin-bottom: 14px; display: flex; align-items: center; gap: 4px; }
+        .ship-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eef2f7; padding-top: 14px; }
+        .ship-price { font-size: 20px; font-weight: 700; color: var(--vsrp-accent); }
+        .ship-price span { font-size: 12px; font-weight: 500; color: var(--text-gray); }
+        .btn-select { background: var(--vsrp-blue); color: white; border: none; padding: 10px 20px; border-radius: 30px; font-size: 13px; font-weight: 600; cursor: pointer; }
 
         /* --- ЭКРАН ДЕТАЛЕЙ --- */
-        #detail-page {
-            display: none;
-            background: var(--vsrp-light);
-            min-height: 100vh;
-        }
-
-        .detail-hero {
-            height: 260px;
-            position: relative;
-        }
-
-        .detail-hero img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
+        #detail-page { display: none; background: var(--vsrp-light); min-height: 100vh; }
+        .detail-hero { height: 260px; position: relative; }
+        .detail-hero img { width: 100%; height: 100%; object-fit: cover; }
         .detail-hero-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            position: absolute; bottom: 0; left: 0; right: 0;
             background: linear-gradient(to top, rgba(0, 36, 68, 0.92) 0%, transparent 100%);
-            padding: 40px 20px 30px;
-            color: white;
+            padding: 40px 20px 30px; color: white;
         }
+        .detail-hero-title { font-size: 24px; font-weight: 700; }
+        .detail-hero-price { font-weight: 600; margin-top: 6px; font-size: 15px; opacity: 0.9; }
+        .detail-body { padding: 24px 20px 40px; border-radius: var(--radius-lg) var(--radius-lg) 0 0; background: var(--vsrp-light); position: relative; top: -24px; }
+        .detail-desc { font-size: 14px; line-height: 1.7; color: var(--text-gray); margin-bottom: 24px; background: white; padding: 18px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
 
-        .detail-hero-title {
-            font-size: 24px;
-            font-weight: 700;
-            line-height: 1.2;
-        }
+        /* ВЫБОР ДАТЫ РЕЙСА */
+        .date-selector-block { background: white; border-radius: var(--radius-md); padding: 16px; margin-bottom: 20px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 8px; }
+        .date-label { font-size: 14px; font-weight: 700; color: var(--vsrp-blue); }
+        .vsrp-select { width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #cbd5e1; outline: none; font-size: 14px; font-weight: 600; color: var(--text-dark); background: white; }
 
-        .detail-hero-price {
-            font-weight: 600;
-            margin-top: 6px;
-            font-size: 15px;
-            opacity: 0.9;
-        }
-
-        .detail-body {
-            padding: 24px 20px 40px;
-            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-            background: var(--vsrp-light);
-            position: relative;
-            top: -24px;
-        }
-
-        .detail-desc {
-            font-size: 14px;
-            line-height: 1.7;
-            color: var(--text-gray);
-            margin-bottom: 24px;
-            background: white;
-            padding: 18px;
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-sm);
-        }
-
-        /* --- СХЕМА САЛОНА --- */
-        .deck-container {
-            background: white;
-            border-radius: var(--radius-md);
-            padding: 24px 16px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid rgba(0, 71, 137, 0.08);
-        }
-
-        .deck-title {
-            text-align: center;
-            font-weight: 700;
-            color: var(--vsrp-blue);
-            margin-bottom: 8px;
-            font-size: 16px;
-        }
-
-        .deck-legend {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 11px;
-            color: var(--text-gray);
-            font-weight: 500;
-        }
-
-        .legend-dot {
-            width: 14px;
-            height: 14px;
-            border-radius: 4px 4px 2px 2px;
-            border: 2px solid #cbd5e1;
-        }
-
+        /* СХЕМА САЛОНА */
+        .deck-container { background: white; border-radius: var(--radius-md); padding: 24px 16px; box-shadow: var(--shadow-sm); border: 1px solid rgba(0, 71, 137, 0.08); }
+        .deck-title { text-align: center; font-weight: 700; color: var(--vsrp-blue); margin-bottom: 8px; font-size: 16px; }
+        .deck-legend { display: flex; justify-content: center; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+        .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-gray); font-weight: 500; }
+        .legend-dot { width: 14px; height: 14px; border-radius: 4px; border: 2px solid #cbd5e1; }
         .legend-dot.free { background: white; }
         .legend-dot.selected { background: var(--vsrp-accent); border-color: var(--vsrp-accent); }
         .legend-dot.occupied { background: #f1f5f9; border-color: #e2e8f0; }
+        .seat-grid { display: grid; grid-template-columns: 1fr 1fr 36px 1fr 1fr; gap: 10px; justify-items: center; max-width: 280px; margin: 0 auto; }
+        .seat { width: 44px; height: 44px; background-color: white; border: 2px solid #cbd5e1; border-radius: 10px 10px 4px 4px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: var(--text-gray); cursor: pointer; position: relative; }
+        .seat::after { content: ''; position: absolute; bottom: 4px; width: 20px; height: 3px; background: #cbd5e1; border-radius: 2px; }
+        .seat.selected { background-color: var(--vsrp-accent); border-color: var(--vsrp-accent); color: white; transform: scale(1.05); }
+        .seat.selected::after { background: white; opacity: 0.5; }
+        .seat.occupied { background-color: #f1f5f9; border-color: #e2e8f0; color: #cbd5e1; cursor: not-allowed; text-decoration: line-through; }
+        .seat.occupied::after { background: #e2e8f0; }
+        .aisle { width: 100%; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #d1d5db; font-weight: 600; }
 
-        .seat-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 36px 1fr 1fr;
-            gap: 10px;
-            justify-items: center;
-            max-width: 280px;
-            margin: 0 auto;
-        }
+        /* --- КАНЦЕЛЯРИЯ, БИЛЕТЫ И АРХИВЫ --- */
+        .overlay { position: fixed; inset: 0; background: rgba(0, 20, 40, 0.5); backdrop-filter: blur(4px); z-index: 200; opacity: 0; visibility: hidden; transition: opacity 0.3s; }
+        .overlay.active { opacity: 1; visibility: visible; }
+        .cabinet-drawer { position: fixed; bottom: 0; left: 0; right: 0; background: var(--vsrp-light); border-radius: var(--radius-lg) var(--radius-lg) 0 0; z-index: 201; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1); max-height: 88vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
+        .cabinet-drawer.active { transform: translateY(0); }
+        .drawer-handle { width: 40px; height: 4px; background: #d1d5db; border-radius: 4px; margin: 12px auto 0; }
+        .drawer-header { padding: 16px 20px 12px; display: flex; justify-content: space-between; align-items: center; }
+        .drawer-title { font-size: 20px; font-weight: 700; color: var(--vsrp-blue); }
+        .drawer-close { width: 36px; height: 36px; border-radius: 50%; border: none; background: white; color: var(--text-gray); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .drawer-body { padding: 0 20px 32px; }
 
-        .seat {
-            width: 44px;
-            height: 44px;
-            background-color: white;
-            border: 2px solid #cbd5e1;
-            border-radius: 10px 10px 4px 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-gray);
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-        }
+        .profile-card { background: linear-gradient(135deg, var(--vsrp-blue) 0%, var(--vsrp-blue-dark) 100%); border-radius: var(--radius-md); padding: 20px; color: white; margin-bottom: 16px; }
+        .profile-avatar { width: 56px; height: 56px; border-radius: 50%; background: rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; margin-bottom: 12px; border: 2px solid rgba(255, 255, 255, 0.3); }
+        .profile-name { font-size: 18px; font-weight: 700; }
+        .profile-username { font-size: 13px; opacity: 0.75; }
 
-        .seat::after {
-            content: '';
-            position: absolute;
-            bottom: 4px;
-            width: 20px;
-            height: 3px;
-            background: #cbd5e1;
-            border-radius: 2px;
-        }
+        .balance-card { background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: var(--radius-md); padding: 18px 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+        .balance-label { font-size: 13px; color: var(--text-gray); }
+        .balance-amount { font-size: 24px; font-weight: 700; color: var(--vsrp-blue); }
 
-        .seat.selected {
-            background-color: var(--vsrp-accent);
-            border-color: var(--vsrp-accent);
-            color: white;
-            transform: scale(1.05);
-        }
+        .tickets-section { background: white; border-radius: var(--radius-md); padding: 18px; box-shadow: var(--shadow-sm); margin-bottom: 16px; }
+        .tickets-section-title { font-size: 16px; font-weight: 700; color: var(--vsrp-blue); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+        .ticket-item { background: var(--vsrp-light); border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: 12px; border-left: 4px solid var(--vsrp-accent); display: flex; justify-content: space-between; align-items: center; }
+        .ticket-ship { font-size: 14px; font-weight: 700; color: var(--text-dark); }
+        .ticket-meta { font-size: 12px; color: var(--text-gray); margin-top: 4px; line-height: 1.5; }
+        .btn-cancel-ticket { background: #fee2e2; color: #ef4444; border: none; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; }
+        
+        /* Архивный блок */
+        .archive-item { background: #f8fafc; border-left: 4px solid #94a3b8; opacity: 0.75; }
+        .archive-status { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; }
+        .status-cancelled { background: #fee2e2; color: #ef4444; }
+        .status-old { background: #e2e8f0; color: #64748b; }
 
-        .seat.selected::after {
-            background: white;
-            opacity: 0.5;
-        }
-
-        .seat.occupied {
-            background-color: #f1f5f9;
-            border-color: #e2e8f0;
-            color: #cbd5e1;
-            cursor: not-allowed;
-            text-decoration: line-through;
-        }
-
-        .seat.occupied::after {
-            background: #e2e8f0;
-        }
-
-        .aisle {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 9px;
-            color: #d1d5db;
-            font-weight: 600;
-            letter-spacing: 1px;
-        }
-
-        /* --- ЛИЧНЫЙ КАБИНЕТ (ШТОРКА) --- */
-        .overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 20, 40, 0.5);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            z-index: 200;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
-        }
-
-        .overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .cabinet-drawer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--vsrp-light);
-            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-            z-index: 201;
-            transform: translateY(100%);
-            transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
-            max-height: 88vh;
-            overflow-y: auto;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .cabinet-drawer.active {
-            transform: translateY(0);
-        }
-
-        .drawer-handle {
-            width: 40px;
-            height: 4px;
-            background: #d1d5db;
-            border-radius: 4px;
-            margin: 12px auto 0;
-        }
-
-        .drawer-header {
-            padding: 16px 20px 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .drawer-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--vsrp-blue);
-        }
-
-        .drawer-close {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: none;
-            background: white;
-            color: var(--text-gray);
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow-sm);
-            transition: transform 0.15s;
-        }
-
-        .drawer-close:active {
-            transform: scale(0.92);
-        }
-
-        .drawer-body {
-            padding: 0 20px 32px;
-        }
-
-        /* Карточка профиля */
-        .profile-card {
-            background: linear-gradient(135deg, var(--vsrp-blue) 0%, var(--vsrp-blue-dark) 100%);
-            border-radius: var(--radius-md);
-            padding: 20px;
-            color: white;
-            margin-bottom: 16px;
-            box-shadow: var(--shadow-md);
-        }
-
-        .profile-avatar {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            overflow: hidden;
-        }
-
-        .profile-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .profile-name {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .profile-username {
-            font-size: 13px;
-            opacity: 0.75;
-            font-weight: 500;
-        }
-
-        .btn-telegram-login {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: #2AABEE;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 30px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 8px;
-            transition: opacity 0.2s;
-        }
-
-        .btn-telegram-login:active {
-            opacity: 0.85;
-        }
-
-        /* Баланс */
-        .balance-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-md);
-            padding: 18px 20px;
-            margin-bottom: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .balance-label {
-            font-size: 13px;
-            color: var(--text-gray);
-            font-weight: 500;
-        }
-
-        .balance-amount {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--vsrp-blue);
-        }
-
-        /* Билеты */
-        .tickets-section {
-            background: white;
-            border-radius: var(--radius-md);
-            padding: 18px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .tickets-section-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--vsrp-blue);
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .tickets-empty {
-            text-align: center;
-            padding: 28px 16px;
-            color: var(--text-gray);
-            font-size: 14px;
-            font-weight: 500;
-            line-height: 1.5;
-        }
-
-        .tickets-empty-icon {
-            font-size: 40px;
-            margin-bottom: 12px;
-            opacity: 0.5;
-        }
-
-        .ticket-item {
-            background: var(--vsrp-light);
-            border-radius: var(--radius-sm);
-            padding: 14px 16px;
-            margin-bottom: 10px;
-            border-left: 4px solid var(--vsrp-accent);
-        }
-
-        .ticket-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .ticket-ship {
-            font-size: 15px;
-            font-weight: 700;
-            margin-bottom: 6px;
-            color: var(--text-dark);
-        }
-
-        .ticket-meta {
-            font-size: 12px;
-            color: var(--text-gray);
-            font-weight: 500;
-            line-height: 1.6;
-        }
-
-        .ticket-price {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--vsrp-accent);
-            margin-top: 6px;
-        }
-
-        /* --- ОКНО ПОДТВЕРЖДЕНИЯ ПОКУПКИ --- */
-        .confirm-modal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0.9);
-            background: white;
-            padding: 24px;
-            border-radius: var(--radius-md);
-            z-index: 300;
-            width: 90%;
-            max-width: 320px;
-            box-shadow: var(--shadow-lg);
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.2s;
-        }
-
-        .confirm-modal.active {
-            opacity: 1;
-            visibility: visible;
-            transform: translate(-50%, -50%) scale(1);
-        }
-
+        /* МОДАЛКА КРАСИВАЯ ПОДТВЕРЖДЕНИЯ */
+        .confirm-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); background: white; padding: 24px; border-radius: var(--radius-md); z-index: 300; width: 90%; max-width: 320px; box-shadow: var(--shadow-lg); opacity: 0; visibility: hidden; transition: all 0.2s; }
+        .confirm-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
         .confirm-title { font-size: 18px; font-weight: 700; color: var(--vsrp-blue); margin-bottom: 12px; }
-        .confirm-details { font-size: 14px; color: var(--text-dark); margin-bottom: 20px; line-height: 1.6; background: var(--vsrp-light); padding: 12px; border-radius: 8px;}
+        .confirm-details { font-size: 13px; color: var(--text-dark); margin-bottom: 20px; line-height: 1.6; background: var(--vsrp-light); padding: 12px; border-radius: 8px; }
         .confirm-actions { display: flex; gap: 10px; }
         .btn-confirm { flex: 1; background: var(--vsrp-accent); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .btn-cancel { flex: 1; background: #e2e8f0; color: var(--text-dark); border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
@@ -671,54 +200,19 @@
 <body>
 
     <header class="navbar" id="navbar">
-        <div class="navbar-logo">
-            <div class="navbar-logo-icon">⚓</div>
-            <span>ВСРП</span>
-        </div>
-        <button class="profile-btn" id="profile-btn" aria-label="Личный кабинет">
-            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-            <span>Кабинет</span>
-        </button>
+        <div class="navbar-logo"><div class="navbar-logo-icon">⚓</div><span>ВСРП БОТ</span></div>
+        <button class="profile-btn" id="profile-btn">🎭 Личный кабинет</button>
     </header>
 
     <main id="catalog-page" class="container">
-        <h1 class="section-title">Популярные рейсы</h1>
-        <p class="section-subtitle">Восточно-Сибирское речное пароходство</p>
-
-        <article class="ship-card" data-ship-id="barguzin">
-            <div class="ship-img-wrapper">
-                <span class="ship-badge">ХИТ ПРОДАЖ</span>
-                <img src="https://images.unsplash.com/photo-1544365558-35aa4afcf11f?auto=format&fit=crop&w=800&q=80" alt="Теплоход Баргузин" class="ship-img">
-            </div>
-            <div class="ship-content">
-                <h2 class="ship-title">Теплоход «Баргузин»</h2>
-                <p class="ship-route">📍 Иркутск — Большие Коты</p>
-                <div class="ship-footer">
-                    <div class="ship-price">1 500 ₽ <span>/ место</span></div>
-                    <button class="btn-select">Выбрать</button>
-                </div>
-            </div>
-        </article>
-
-        <article class="ship-card" data-ship-id="hivus">
-            <div class="ship-img-wrapper">
-                <span class="ship-badge" style="background: rgba(255, 122, 0, 0.92);">ЗИМНИЙ ТУР</span>
-                <img src="https://images.unsplash.com/photo-1518182170546-076616fdcbdd?auto=format&fit=crop&w=800&q=80" alt="Хивус-10" class="ship-img">
-            </div>
-            <div class="ship-content">
-                <h2 class="ship-title">Хивус-10 (Лёд Байкала)</h2>
-                <p class="ship-route">📍 Листвянка — Песчаная бухта</p>
-                <div class="ship-footer">
-                    <div class="ship-price">6 000 ₽ <span>/ место</span></div>
-                    <button class="btn-select">Выбрать</button>
-                </div>
-            </div>
-        </article>
+        <h1 class="section-title">Каталог маршрутов</h1>
+        <p class="section-subtitle">Официальные регулярные рейсы Восточно-Сибирского речного пароходства</p>
+        <div id="dynamic-ships-catalog"></div>
     </main>
 
     <section id="detail-page">
         <div class="detail-hero">
-            <img id="detail-img" src="" alt="Фото судна">
+            <img id="detail-img" src="" alt="Судно">
             <div class="detail-hero-overlay">
                 <h2 id="detail-title" class="detail-hero-title">Название</h2>
                 <p id="detail-price" class="detail-hero-price">0 ₽</p>
@@ -726,10 +220,15 @@
         </div>
 
         <div class="detail-body">
-            <p id="detail-desc" class="detail-desc">Описание маршрута...</p>
+            <p id="detail-desc" class="detail-desc"></p>
+
+            <div class="date-selector-block">
+                <label class="date-label" for="date-select">📅 Выберите дату отправления:</label>
+                <select id="date-select" class="vsrp-select"></select>
+            </div>
 
             <div class="deck-container">
-                <div class="deck-title">СХЕМА САЛОНА</div>
+                <div class="deck-title">СХЕМА ПАССАЖИРСКИХ МЕСТ</div>
                 <div class="deck-legend">
                     <span class="legend-item"><span class="legend-dot free"></span> Свободно</span>
                     <span class="legend-item"><span class="legend-dot selected"></span> Выбрано</span>
@@ -741,279 +240,168 @@
     </section>
 
     <div class="overlay" id="cabinet-overlay"></div>
-
-    <div class="confirm-modal" id="confirm-modal">
-        <div class="confirm-title">Подтверждение заказа</div>
-        <div class="confirm-details" id="confirm-details"></div>
-        <div class="confirm-actions">
-            <button class="btn-cancel" id="btn-cancel-pay">Отмена</button>
-            <button class="btn-confirm" id="btn-confirm-pay">Оплатить</button>
-        </div>
-    </div>
-
-    <aside class="cabinet-drawer" id="cabinet-drawer" role="dialog" aria-label="Личный кабинет">
+    <aside class="cabinet-drawer" id="cabinet-drawer">
         <div class="drawer-handle"></div>
         <div class="drawer-header">
-            <h2 class="drawer-title">Личный кабинет</h2>
-            <button class="drawer-close" id="drawer-close" aria-label="Закрыть">✕</button>
+            <h2 class="drawer-title">Ваш профиль</h2>
+            <button class="drawer-close" id="drawer-close">✕</button>
         </div>
         <div class="drawer-body">
-            <div class="profile-card" id="profile-card">
-                <div class="profile-avatar" id="profile-avatar">?</div>
-                <div class="profile-name" id="profile-name">Гость</div>
-                <div class="profile-username" id="profile-username"></div>
-                <button class="btn-telegram-login" id="btn-telegram-login" style="display: none;">
-                    ✈ Войти через Telegram
-                </button>
+            <div class="profile-card">
+                <div class="profile-avatar" id="profile-avatar">👤</div>
+                <div class="profile-name" id="profile-name">Пассажир ВСРП</div>
+                <div class="profile-username" id="profile-username">Загрузка...</div>
             </div>
 
             <div class="balance-card">
                 <div>
-                    <div class="balance-label">Баланс счёта</div>
+                    <div class="balance-label">Личный счёт пассажира</div>
                     <div class="balance-amount" id="balance-amount">0 ₽</div>
-                    
-                    <div style="display: flex; gap: 8px; margin-top: 10px; align-items: center;">
-                        <input type="number" id="topup-input" placeholder="Сумма" style="width: 80px; padding: 6px; border-radius: 6px; border: 1px solid var(--glass-border); font-size: 13px; outline: none; background: rgba(255,255,255,0.8);">
-                        <button id="btn-topup" style="background: var(--vsrp-accent); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; transition: opacity 0.2s;">➕ Пополнить</button>
+                    <div style="display: flex; gap: 8px; margin-top: 12px;">
+                        <input type="number" id="topup-input" placeholder="Сумма" style="width: 90px; padding: 8px; border-radius: 8px; border: 1px solid var(--glass-border); font-weight: 600;">
+                        <button id="btn-topup" style="background: var(--vsrp-accent); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer;">➕ Пополнить</button>
                     </div>
                 </div>
-                <span style="font-size: 28px;">💳</span>
             </div>
 
             <div class="tickets-section">
-                <h3 class="tickets-section-title">🎫 Мои билеты</h3>
-                <div id="tickets-list">
-                    <div class="tickets-empty" id="tickets-empty">
-                        <div class="tickets-empty-icon">🚢</div>
-                        У вас пока нет активных билетов
-                    </div>
-                </div>
+                <h3 class="tickets-section-title">🎫 Активные билеты</h3>
+                <div id="active-tickets-list"></div>
             </div>
 
-            <button id="btn-refresh" style="width: 100%; padding: 12px; background: #eef2f7; color: var(--vsrp-blue); border: none; border-radius: 12px; font-weight: bold; margin-top: 16px; cursor: pointer;">
-                🔄 Обновить баланс
-            </button>
-            
-            <button id="btn-exit-app" style="width: 100%; padding: 12px; background: #fee2e2; color: #ef4444; border: none; border-radius: 12px; font-weight: bold; margin-top: 10px; font-size: 14px; cursor: pointer;">
-                🚪 Выйти из приложения
-            </button>
+            <div class="tickets-section" style="background: #f8fafc;">
+                <h3 class="tickets-section-title" style="color: #64748b;">📂 Архив и история (1 год)</h3>
+                <div id="archive-tickets-list"></div>
+            </div>
 
+            <button id="btn-exit-app" style="width:100%; padding:14px; background:#fee2e2; color:#ef4444; border:none; border-radius:12px; font-weight:bold; cursor:pointer; font-size:14px;">🚪 Закрыть приложение</button>
         </div>
     </aside>
 
+    <div class="confirm-modal" id="confirm-modal">
+        <div class="confirm-title">Подтверждение оплаты</div>
+        <div class="confirm-details" id="confirm-details"></div>
+        <div class="confirm-actions">
+            <button class="btn-cancel" id="btn-cancel-pay">Отмена</button>
+            <button class="btn-confirm" id="btn-confirm-pay">Оплатить билет</button>
+        </div>
+    </div>
+
     <script>
-        /* ============================================================
-         * ИНИЦИАЛИЗАЦИЯ TELEGRAM WEB APP API
-         * ============================================================ */
         const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+        tg.setHeaderColor('#004789');
+        tg.MainButton.color = '#ff7a00';
+        tg.MainButton.textColor = '#ffffff';
 
-        function initTelegramWebApp() {
-            tg.ready();
-            tg.expand();
-            tg.setHeaderColor('#004789');
-            tg.MainButton.color = '#ff7a00';
-            tg.MainButton.textColor = '#ffffff';
-        }
-
-        initTelegramWebApp();
-
-        /* ============================================================
-         * СОСТОЯНИЕ ПРИЛОЖЕНИЯ
-         * ============================================================ */
-        const SHIPS = {
-            barguzin: {
-                name: 'Теплоход «Баргузин»',
-                price: 1500,
-                route: 'Иркутск — Большие Коты',
-                desc: 'Быстрый и комфортабельный маршрут из Иркутска до посёлка Большие Коты. Судно на воздушной каверне оснащено удобными креслами самолётного типа, панорамными окнами и кафе-баром на борту. Время в пути — около 1 часа 20 минут.',
-                img: 'https://images.unsplash.com/photo-1544365558-35aa4afcf11f?auto=format&fit=crop&w=800&q=80',
-                occupiedSeats: [3, 8, 11]
-            },
-            hivus: {
-                name: 'Хивус-10 (Лёд Байкала)',
-                price: 6000,
-                route: 'Листвянка — Песчаная бухта',
-                desc: 'Зимняя сказка Байкала. Судно на воздушной подушке безопасно передвигается по прозрачному льду. Внутри салона работает мощный отопитель — вы будете путешествовать в тепле, наблюдая за уникальными ледяными пейзажами.',
-                img: 'https://images.unsplash.com/photo-1518182170546-076616fdcbdd?auto=format&fit=crop&w=800&q=80',
-                occupiedSeats: [2, 5, 9, 14]
-            }
+        // Статические метаданные кораблей для рендеринга
+        const SHIP_METADATA = {
+            barguzin: { desc: 'Скоростное комфортабельное судно на воздушной каверне. Панорамные окна, салон самолетного типа.', img: 'https://images.unsplash.com/photo-1544365558-35aa4afcf11f?auto=format&fit=crop&w=800&q=80' },
+            hivus: { desc: 'Судно на воздушной подушке (амфибия). Идеально подходит для передвижения по льду Байкала и мелководью.', img: 'https://images.unsplash.com/photo-1518182170546-076616fdcbdd?auto=format&fit=crop&w=800&q=80' }
         };
 
-        let userBalance = parseInt(localStorage.getItem('vsrp_balance')) || 10000;
-        let purchasedTickets = JSON.parse(localStorage.getItem('vsrp_tickets')) || [];
+        // Состояние приложения (Парсится напрямую из СУБД)
+        let userBalance = 0;
+        let DATABASE_TOURS = [];
+        let DATABASE_TICKETS = [];
+        
         let currentShipId = '';
-        let currentPrice = 0;
+        let selectedDate = '';
         let selectedSeats = [];
 
-        /* ============================================================
-         * DOM-ЭЛЕМЕНТЫ
-         * ============================================================ */
-        const catalogPage = document.getElementById('catalog-page');
-        const detailPage = document.getElementById('detail-page');
-        const navbar = document.getElementById('navbar');
-        const cabinetOverlay = document.getElementById('cabinet-overlay');
-        const cabinetDrawer = document.getElementById('cabinet-drawer');
-        const balanceAmountEl = document.getElementById('balance-amount');
-        const ticketsListEl = document.getElementById('tickets-list');
-        const ticketsEmptyEl = document.getElementById('tickets-empty');
-
-        /* ============================================================
-         * ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ И БАЛАНС
-         * ============================================================ */
-        function loadTelegramUser() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const nameFromUrl = urlParams.get('name');
-            const balanceFromUrl = parseInt(urlParams.get('balance')); 
+        // Инициализация данных из параметров URL Питона
+        function parseUrlState() {
+            const params = new URLSearchParams(window.location.search);
+            userBalance = parseInt(params.get('balance')) || 0;
             
-            let savedBalance = parseInt(localStorage.getItem('vsrp_balance'));
-
-            // Умная логика баланса: если с бэкенда пришла свежая сумма, которая больше сохраненной, берем её
-            if (!isNaN(balanceFromUrl) && (!savedBalance || balanceFromUrl > savedBalance)) {
-                userBalance = balanceFromUrl;
-                localStorage.setItem('vsrp_balance', userBalance);
-            } else if (!isNaN(savedBalance)) {
-                userBalance = savedBalance;
+            try {
+                DATABASE_TOURS = JSON.parse(decodeURIComponent(params.get('tours'))) || [];
+                DATABASE_TICKETS = JSON.parse(decodeURIComponent(params.get('tickets'))) || [];
+            } catch(e) {
+                console.error("Ошибка десериализации БД данных:", e);
             }
-            renderBalance();
             
-            const user = tg.initDataUnsafe?.user;
-            const avatarEl = document.getElementById('profile-avatar');
-            const nameEl = document.getElementById('profile-name');
-            const usernameEl = document.getElementById('profile-username');
-            const loginBtn = document.getElementById('btn-telegram-login');
-
-            if (user) {
-                const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ');
-                nameEl.textContent = fullName || 'Пользователь Telegram';
-                if (user.username) usernameEl.textContent = '@' + user.username;
-                if (user.photo_url) avatarEl.innerHTML = '<img src="' + user.photo_url + '" alt="Аватар">';
-                else avatarEl.textContent = (user.first_name || '?').charAt(0).toUpperCase();
-                loginBtn.style.display = 'none';
-            } else if (nameFromUrl) {
-                nameEl.textContent = nameFromUrl;
-                usernameEl.textContent = 'Авторизован через ВСРП бот';
-                avatarEl.textContent = nameFromUrl.charAt(0).toUpperCase();
-                loginBtn.style.display = 'none';
-            } else {
-                nameEl.textContent = 'Гость';
-                usernameEl.textContent = 'Войдите через Telegram';
-                avatarEl.textContent = '?';
-                loginBtn.style.display = 'inline-flex';
-            }
+            document.getElementById('balance-amount').textContent = userBalance.toLocaleString('ru-RU') + ' ₽';
+            renderCatalog();
+            renderProfile();
+            renderTicketsLists();
         }
 
-        function handleTelegramLogin() {
-            tg.showAlert('Откройте приложение через Telegram-бота ВСРП, чтобы автоматически войти в личный кабинет.');
+        // Рендеринг каталога кораблей из БД
+        function renderCatalog() {
+            const container = document.getElementById('dynamic-ships-catalog');
+            container.innerHTML = '';
+            
+            // Группируем туры по shipId для отрисовки уникальных карточек
+            const uniqueShips = {};
+            DATABASE_TOURS.forEach(t => {
+                if (!uniqueShips[t.shipId]) uniqueShips[t.shipId] = t;
+            });
+
+            Object.values(uniqueShips).forEach(ship => {
+                const meta = SHIP_METADATA[ship.shipId] || { desc: 'Пассажирский рейс ВСРП', img: 'https://images.unsplash.com/photo-1544365558-35aa4afcf11f?auto=format&fit=crop&w=800&q=80' };
+                container.innerHTML += `
+                    <article class="ship-card" onclick="openShipDetails('${ship.shipId}')">
+                        <div class="ship-img-wrapper">
+                            <span class="ship-badge">РЕГУЛЯРНЫЙ РЕЙС</span>
+                            <img src="${meta.img}" class="ship-img" alt="">
+                        </div>
+                        <div class="ship-content">
+                            <h2 class="ship-title">${ship.title}</h2>
+                            <p class="ship-route">📍 ${ship.route}</p>
+                            <div class="ship-footer">
+                                <div class="ship-price">${ship.price.toLocaleString('ru-RU')} ₽ <span>/ место</span></div>
+                                <button class="btn-select">Выбрать рейс</button>
+                            </div>
+                        </div>
+                    </article>
+                `;
+            });
         }
 
-        function openCabinet() {
-            cabinetOverlay.classList.add('active');
-            cabinetDrawer.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeCabinet() {
-            cabinetOverlay.classList.remove('active');
-            cabinetDrawer.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        /* ============================================================
-         * ФИНАНСЫ И БИЛЕТЫ
-         * ============================================================ */
-        function formatRubles(amount) {
-            return amount.toLocaleString('ru-RU') + ' ₽';
-        }
-
-        function renderBalance() {
-            balanceAmountEl.textContent = formatRubles(userBalance);
-        }
-
-        function deductBalance(amount) {
-            if (amount <= 0 || userBalance < amount) return false;
-            userBalance -= amount;
-            renderBalance();
-            return true;
-        }
-
-        function hasEnoughBalance(amount) {
-            return userBalance >= amount;
-        }
-
-        function addTicket(ticket) {
-            purchasedTickets.unshift(ticket);
-            renderTickets();
-        }
-
-        function renderTickets() {
-            if (purchasedTickets.length === 0) {
-                ticketsListEl.innerHTML = '';
-                ticketsListEl.appendChild(ticketsEmptyEl);
-                ticketsEmptyEl.style.display = 'block';
-                return;
-            }
-
-            ticketsEmptyEl.style.display = 'none';
-            ticketsListEl.innerHTML = purchasedTickets.map(function (ticket) {
-                const seatsStr = ticket.seats.sort(function (a, b) { return a - b; }).join(', ');
-                const dateStr = new Date(ticket.date).toLocaleString('ru-RU', {
-                    day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'
-                });
-
-                return (
-                    '<div class="ticket-item">' +
-                        '<div class="ticket-ship">' + escapeHtml(ticket.ship) + '</div>' +
-                        '<div class="ticket-meta">Места: ' + seatsStr + '<br>Дата: ' + dateStr + '</div>' +
-                        '<div class="ticket-price">' + formatRubles(ticket.price) + '</div>' +
-                    '</div>'
-                );
-            }).join('');
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        /* ============================================================
-         * НАВИГАЦИЯ И ВЫБОР МЕСТ
-         * ============================================================ */
-        function openShip(shipId) {
-            const ship = SHIPS[shipId];
-            if (!ship) return;
-
+        // Экран деталей корабля и выпадающий список дат
+        function openShipDetails(shipId) {
             currentShipId = shipId;
-            currentPrice = ship.price;
             selectedSeats = [];
-            updateMainButton();
+            tg.MainButton.hide();
 
-            document.getElementById('detail-title').textContent = ship.name;
-            document.getElementById('detail-price').textContent = formatRubles(ship.price) + ' за 1 пассажира';
-            document.getElementById('detail-desc').textContent = ship.desc;
-            document.getElementById('detail-img').src = ship.img;
-            document.getElementById('detail-img').alt = ship.name;
+            const toursForShip = DATABASE_TOURS.filter(t => t.shipId === shipId);
+            if(toursForShip.length === 0) return;
 
-            let currentOccupied = JSON.parse(localStorage.getItem('vsrp_occupied_' + shipId)) || ship.occupiedSeats;
-            generateSeats(currentOccupied);
+            const baseTour = toursForShip[0];
+            const meta = SHIP_METADATA[shipId] || { desc: '', img: '' };
 
-            catalogPage.style.display = 'none';
-            navbar.style.display = 'none';
-            detailPage.style.display = 'block';
+            document.getElementById('detail-title').textContent = baseTour.title;
+            document.getElementById('detail-price').textContent = baseTour.price.toLocaleString('ru-RU') + ' ₽ за место';
+            document.getElementById('detail-desc').textContent = meta.desc;
+            document.getElementById('detail-img').src = meta.img;
 
+            // Заполняем выпадающий список дат из базы
+            const selectEl = document.getElementById('date-select');
+            selectEl.innerHTML = toursForShip.map(t => `<option value="${t.date}">${t.date}</option>`).join('');
+            selectedDate = selectEl.value;
+
+            // Перерисовываем карту мест под выбранную дату
+            updateSeatMapForSelectedDate();
+
+            selectEl.onchange = function() {
+                selectedDate = this.value;
+                selectedSeats = [];
+                updateMainButton();
+                updateSeatMapForSelectedDate();
+            };
+
+            document.getElementById('catalog-page').style.display = 'none';
+            document.getElementById('navbar').style.display = 'none';
+            document.getElementById('detail-page').style.display = 'block';
             tg.BackButton.show();
         }
 
-        function closeDetail() {
-            detailPage.style.display = 'none';
-            catalogPage.style.display = 'block';
-            navbar.style.display = 'flex';
-            selectedSeats = [];
-            tg.BackButton.hide();
-            tg.MainButton.hide();
-        }
-
-        function generateSeats(occupiedSeats) {
+        function updateSeatMapForSelectedDate() {
+            const activeTour = DATABASE_TOURS.find(t => t.shipId === currentShipId && t.date === selectedDate);
+            const occupied = activeTour ? activeTour.occupied : [];
+            
             const seatMap = document.getElementById('seat-map');
             seatMap.innerHTML = '';
 
@@ -1023,7 +411,7 @@
                     if (col === 2) {
                         const aisle = document.createElement('div');
                         aisle.className = 'aisle';
-                        aisle.textContent = row === 1 ? '↕' : '';
+                        aisle.textContent = '↕';
                         seatMap.appendChild(aisle);
                         continue;
                     }
@@ -1032,173 +420,175 @@
                     seat.className = 'seat';
                     seat.textContent = seatNumber;
 
-                    if (occupiedSeats.includes(seatNumber)) {
+                    if (occupied.includes(seatNumber)) {
                         seat.classList.add('occupied');
                     } else {
                         const num = seatNumber;
-                        seat.addEventListener('click', function () {
-                            toggleSeat(seat, num);
-                        });
+                        seat.addEventListener('click', function () { toggleSeat(this, num); });
                     }
-
                     seatMap.appendChild(seat);
                     seatNumber++;
                 }
             }
         }
 
-        function toggleSeat(seatElement, seatNumber) {
-            const index = selectedSeats.indexOf(seatNumber);
-            if (index !== -1) {
-                selectedSeats.splice(index, 1);
-                seatElement.classList.remove('selected');
+        function toggleSeat(element, num) {
+            const idx = selectedSeats.indexOf(num);
+            if (idx !== -1) {
+                selectedSeats.splice(idx, 1);
+                element.classList.remove('selected');
             } else {
-                selectedSeats.push(seatNumber);
-                seatElement.classList.add('selected');
+                selectedSeats.push(num);
+                element.classList.add('selected');
             }
             updateMainButton();
         }
 
         function updateMainButton() {
             if (selectedSeats.length > 0) {
-                const totalPrice = selectedSeats.length * currentPrice;
-                tg.MainButton.setText('КУПИТЬ (' + selectedSeats.length + ' МЕСТ) ЗА ' + totalPrice.toLocaleString('ru-RU') + ' ₽');
+                const tour = DATABASE_TOURS.find(t => t.shipId === currentShipId && t.date === selectedDate);
+                const cost = selectedSeats.length * tour.price;
+                tg.MainButton.setText(`ОФОРМИТЬ (${selectedSeats.length} МЕСТ) ЗА ${cost.toLocaleString('ru-RU')} ₽`);
                 tg.MainButton.show();
             } else {
                 tg.MainButton.hide();
             }
         }
 
-        /* ============================================================
-         * ПОКУПКА БИЛЕТА (ДВА ШАГА: МОДАЛКА -> ОПЛАТА)
-         * ============================================================ */
-        
-        // ШАГ 1: Показываем наше красивое окно подтверждения
-        function handlePurchase() {
-            const ship = SHIPS[currentShipId];
-            if (!ship || selectedSeats.length === 0) return;
+        // ШАГ 1 ПОКУПКИ: Показ кастомного окна подтверждения
+        tg.MainButton.onClick(function() {
+            const tour = DATABASE_TOURS.find(t => t.shipId === currentShipId && t.date === selectedDate);
+            const cost = selectedSeats.length * tour.price;
 
-            const totalPrice = selectedSeats.length * currentPrice;
-
-            if (!hasEnoughBalance(totalPrice)) {
-                tg.showAlert('Недостаточно средств. Пополните баланс в личном кабинете.');
+            if (userBalance < cost) {
+                tg.showAlert('❌ Недостаточно средств на балансе. Пожалуйста, пополните счёт.');
                 return;
             }
 
-            const detailsHtml = `
-                <b>Рейс:</b> ${ship.name}<br>
-                <b>Маршрут:</b> ${ship.route}<br>
-                <b>Места:</b> ${selectedSeats.join(', ')}<br>
-                <div style="margin-top:10px; font-size:16px;"><b>К списанию:</b> <span style="color:var(--vsrp-accent); font-weight:bold;">${formatRubles(totalPrice)}</span></div>
+            document.getElementById('confirm-details').innerHTML = `
+                <b>Судно:</b> ${tour.title}<br>
+                <b>Маршрут:</b> ${tour.route}<br>
+                <b>Дата отправления:</b> ${selectedDate}<br>
+                <b>Номера мест:</b> ${selectedSeats.join(', ')}<br>
+                <b>Сумма к списанию:</b> <span style="color:var(--vsrp-accent); font-weight:bold;">${cost.toLocaleString('ru-RU')} ₽</span>
             `;
-            document.getElementById('confirm-details').innerHTML = detailsHtml;
-            
-            document.getElementById('cabinet-overlay').classList.add('active'); // Затемняем фон
-            document.getElementById('confirm-modal').classList.add('active');   // Показываем окно
-        }
+            document.getElementById('cabinet-overlay').classList.add('active');
+            document.getElementById('confirm-modal').classList.add('active');
+        });
 
-        // ШАГ 2: Финальная логика покупки и отправка в Питона (приложение закроется)
-        function executeFinalPurchase() {
-            const ship = SHIPS[currentShipId];
-            const totalPrice = selectedSeats.length * currentPrice;
-            const seatsCopy = selectedSeats.slice();
-
-            // Списываем и сохраняем локально
-            deductBalance(totalPrice);
-            localStorage.setItem('vsrp_balance', userBalance);
-
-            // Добавляем билет
-            const ticket = { ship: ship.name, route: ship.route, seats: seatsCopy, price: totalPrice, date: new Date() };
-            addTicket(ticket);
-            localStorage.setItem('vsrp_tickets', JSON.stringify(purchasedTickets));
-
-            // Занимаем места локально
-            let globalOccupied = JSON.parse(localStorage.getItem('vsrp_occupied_' + currentShipId)) || ship.occupiedSeats;
-            globalOccupied = globalOccupied.concat(seatsCopy);
-            localStorage.setItem('vsrp_occupied_' + currentShipId, JSON.stringify(globalOccupied));
-
-            const payload = {
+        // ШАГ 2 ПОКУПКИ: Отправка JSON в СУБД (приложение закроется)
+        document.getElementById('btn-confirm-pay').onclick = function() {
+            const tour = DATABASE_TOURS.find(t => t.shipId === currentShipId && t.date === selectedDate);
+            tg.sendData(JSON.stringify({
                 action: 'purchase',
-                ship: ship.name,
                 shipId: currentShipId,
-                route: ship.route,
-                seats: seatsCopy,
-                price: totalPrice
-            };
+                ship: tour.title,
+                route: tour.route,
+                date: selectedDate,
+                seats: selectedSeats,
+                price: selectedSeats.length * tour.price
+            }));
+        };
 
-            // Скрываем окно и отправляем данные (WebApp закроется)
-            document.getElementById('confirm-modal').classList.remove('active');
-            document.getElementById('cabinet-overlay').classList.remove('active');
-            tg.sendData(JSON.stringify(payload)); 
+        // ОТМЕНА БИЛЕТА (ВОЗВРАТ)
+        function cancelTicket(ticketId) {
+            tg.showConfirm("Вы действительно хотите отменить бронирование билета и вернуть средства на баланс?", function(yes) {
+                if(yes) {
+                    tg.sendData(JSON.stringify({
+                        action: 'cancel_ticket',
+                        ticketId: ticketId
+                    }));
+                }
+            });
         }
 
-        /* ============================================================
-         * ОБРАБОТЧИКИ КНОПОК
-         * ============================================================ */
+        // СОРТИРОВКА И РЕНДЕР: АКТИВНЫЕ И АРХИВ
+        function renderTicketsLists() {
+            const activeContainer = document.getElementById('active-tickets-list');
+            const archiveContainer = document.getElementById('archive-tickets-list');
+            
+            activeContainer.innerHTML = '';
+            archiveContainer.innerHTML = '';
 
-        tg.BackButton.onClick(function () { closeDetail(); });
-        tg.MainButton.onClick(function () { handlePurchase(); });
-
-        document.getElementById('profile-btn').addEventListener('click', openCabinet);
-        document.getElementById('drawer-close').addEventListener('click', closeCabinet);
-        
-        // Закрытие шторки при клике на оверлей, НО если открыта модалка - оверлей не закрывает ничего
-        cabinetOverlay.addEventListener('click', function() {
-            if (!document.getElementById('confirm-modal').classList.contains('active')) {
-                closeCabinet();
+            if (DATABASE_TICKETS.length === 0) {
+                activeContainer.innerHTML = '<div style="text-align:center; color:var(--text-gray); font-size:13px; padding:10px;">Активных билетов нет</div>';
+                archiveContainer.innerHTML = '<div style="text-align:center; color:var(--text-gray); font-size:13px; padding:10px;">Архив пуст</div>';
+                return;
             }
-        });
-        
-        document.getElementById('btn-telegram-login').addEventListener('click', handleTelegramLogin);
 
-        document.querySelectorAll('.ship-card').forEach(function (card) {
-            card.addEventListener('click', function () {
-                openShip(card.dataset.shipId);
+            DATABASE_TICKETS.forEach(t => {
+                if (t.status === 'active') {
+                    activeContainer.innerHTML += `
+                        <div class="ticket-item">
+                            <div>
+                                <div class="ticket-ship">${t.ship}</div>
+                                <div class="ticket-meta">Маршрут: ${t.route}<br><b>Дата: ${t.date}</b><br>Места: ${t.seats.join(', ')}</div>
+                                <div style="color:var(--vsrp-accent); font-weight:bold; font-size:13px; margin-top:4px;">${t.price.toLocaleString('ru-RU')} ₽</div>
+                            </div>
+                            <button class="btn-cancel-ticket" onclick="cancelTicket(${t.id})">Отменить</button>
+                        </div>
+                    `;
+                } else {
+                    archiveContainer.innerHTML += `
+                        <div class="ticket-item archive-item">
+                            <div>
+                                <div class="ticket-ship">${t.ship}</div>
+                                <div class="ticket-meta">Маршрут: ${t.route}<br>Дата: ${t.date}<br>Места: ${t.seats.join(', ')}</div>
+                            </div>
+                            <span class="archive-status status-cancelled">ОТМЕНЕН</span>
+                        </div>
+                    `;
+                }
             });
+            
+            if(!activeContainer.innerHTML) activeContainer.innerHTML = '<div style="text-align:center; color:var(--text-gray); font-size:12px;">Нет активных поездок</div>';
+            if(!archiveContainer.innerHTML) archiveContainer.innerHTML = '<div style="text-align:center; color:var(--text-gray); font-size:12px;">Архив за 1 год пуст</div>';
+        }
+
+        // СИСТЕМНЫЕ КНОПКИ UI И ПОПОЛНЕНИЕ ЛК
+        tg.BackButton.onClick(function() {
+            document.getElementById('detail-page').style.display = 'none';
+            document.getElementById('catalog-page').style.display = 'block';
+            document.getElementById('navbar').style.display = 'flex';
+            tg.BackButton.hide();
+            tg.MainButton.hide();
         });
 
-        // Кнопка НАСТОЯЩЕГО пополнения
-        document.getElementById('btn-topup').addEventListener('click', function() {
+        document.getElementById('btn-topup').onclick = function() {
             const inputEl = document.getElementById('topup-input');
-            const customAmount = parseInt(inputEl.value);
+            const amt = parseInt(inputEl.value);
+            if (!amt || amt < 100) { tg.showAlert('Минимальная сумма зачисления — 100 ₽.'); return; }
+            tg.sendData(JSON.stringify({ action: 'topup', amount: amt }));
+        };
 
-            if (!customAmount || customAmount <= 0) {
-                tg.showAlert('Пожалуйста, введите сумму для пополнения.');
-                return;
-            }
-            if (customAmount < 100) {
-                tg.showAlert('Минимальная сумма пополнения — 100 ₽.');
-                return;
-            }
+        document.getElementById('profile-btn').onclick = function() {
+            document.getElementById('cabinet-overlay').classList.add('active');
+            document.getElementById('cabinet-drawer').classList.add('active');
+        };
 
-            // Отправляем боту запрос на инвойс
-            tg.sendData(JSON.stringify({ action: 'topup', amount: customAmount }));
-            inputEl.value = '';
-        });
-
-        // Кнопки модального окна подтверждения
-        document.getElementById('btn-cancel-pay').addEventListener('click', () => {
-            document.getElementById('confirm-modal').classList.remove('active');
+        function closeCabinet() {
             document.getElementById('cabinet-overlay').classList.remove('active');
-        });
-        document.getElementById('btn-confirm-pay').addEventListener('click', executeFinalPurchase);
+            document.getElementById('cabinet-drawer').classList.remove('active');
+            document.getElementById('confirm-modal').classList.remove('active');
+        }
 
-        // Кнопка обновления баланса
-        document.getElementById('btn-refresh').addEventListener('click', () => {
-            window.location.reload();
-        });
+        document.getElementById('drawer-close').onclick = closeCabinet;
+        document.getElementById('btn-cancel-pay').onclick = closeCabinet;
+        document.getElementById('btn-exit-app').onclick = function() { tg.close(); };
+        document.getElementById('cabinet-overlay').onclick = function() {
+            if(!document.getElementById('confirm-modal').classList.contains('active')) closeCabinet();
+        };
 
-        // Кнопка выхода из приложения
-        document.getElementById('btn-exit-app').addEventListener('click', () => {
-            tg.close();
-        });
+        function renderProfile() {
+            const user = tg.initDataUnsafe?.user;
+            if (user) {
+                document.getElementById('profile-name').textContent = [user.first_name, user.last_name].filter(Boolean).join(' ');
+                document.getElementById('profile-username').textContent = user.username ? '@' + user.username : 'Пассажир Telegram';
+            }
+        }
 
-        /* ============================================================
-         * СТАРТ ПРИЛОЖЕНИЯ
-         * ============================================================ */
-        loadTelegramUser();
-        renderBalance();
-        renderTickets();
+        // Старт развертывания
+        parseUrlState();
     </script>
 </body>
 </html>
