@@ -28,7 +28,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--vsrp-light); color: var(--text-dark); min-height: 100vh; overflow-x: hidden; }
 
-        /* --- ИМИТАЦИЯ ЗАГРУЗКИ ПРИЛОЖЕНИЯ --- */
+        /* Экран загрузки */
         #loading-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, var(--vsrp-blue) 0%, var(--vsrp-blue-dark) 100%);
@@ -43,7 +43,7 @@
         .loading-text { font-size: 14px; font-weight: 500; letter-spacing: 1px; opacity: 0.85; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* --- НАВИГАЦИЯ --- */
+        /* Навигация */
         .navbar {
             background: linear-gradient(135deg, var(--vsrp-blue) 0%, var(--vsrp-blue-dark) 100%);
             color: white; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between;
@@ -55,7 +55,7 @@
             color: white; padding: 8px 14px; border-radius: 30px; font-size: 12px; font-weight: 600; cursor: pointer;
         }
 
-        /* --- ЭКРАН ПРИВЕТСТВИЯ --- */
+        /* Экран приветствия */
         #intro-page {
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             min-height: calc(100vh - 60px); padding: 30px 20px; text-align: center;
@@ -69,7 +69,7 @@
             border-radius: 30px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: var(--shadow-sm);
         }
 
-        /* --- КАТАЛОГ --- */
+        /* Каталог */
         #catalog-page { padding: 20px; padding-bottom: 90px; }
         .section-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; color: var(--vsrp-blue); }
         .section-subtitle { font-size: 13px; color: var(--text-gray); margin-bottom: 20px; font-weight: 500; }
@@ -85,7 +85,7 @@
         .ship-price span { font-size: 12px; font-weight: 500; color: var(--text-gray); }
         .btn-select { background: var(--vsrp-blue); color: white; border: none; padding: 10px 20px; border-radius: 30px; font-size: 13px; font-weight: 600; cursor: pointer; }
 
-        /* --- ЭКРАН ВЫБОРА МЕСТ --- */
+        /* Экран выбора мест */
         #detail-page { display: none; background: var(--vsrp-light); min-height: 100vh; padding-bottom: 90px; }
         .detail-hero { height: 260px; position: relative; }
         .detail-hero img { width: 100%; height: 100%; object-fit: cover; }
@@ -116,7 +116,7 @@
         .seat.occupied::after { background: #e2e8f0; }
         .aisle { width: 100%; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #d1d5db; font-weight: 600; }
 
-        /* --- ШТОРКА ЛИЧНОГО КАБИНЕТА --- */
+        /* Личный кабинет */
         .overlay { position: fixed; inset: 0; background: rgba(0, 20, 40, 0.5); backdrop-filter: blur(4px); z-index: 200; opacity: 0; visibility: hidden; transition: opacity 0.3s; }
         .overlay.active { opacity: 1; visibility: visible; }
         .cabinet-drawer { position: fixed; bottom: 0; left: 0; right: 0; background: var(--vsrp-light); border-radius: var(--radius-lg) var(--radius-lg) 0 0; z-index: 201; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1); max-height: 88vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
@@ -146,7 +146,7 @@
         .archive-status { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; }
         .status-cancelled { background: #fee2e2; color: #ef4444; }
 
-        /* --- ВСПЛЫВАЮЩИЕ ОКНА (МОДАЛКИ) --- */
+        /* Всплывающие окна (модалки) */
         .confirm-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); background: white; padding: 24px; border-radius: var(--radius-md); z-index: 300; width: 90%; max-width: 320px; box-shadow: var(--shadow-lg); opacity: 0; visibility: hidden; transition: all 0.2s; }
         .confirm-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
         .confirm-title { font-size: 18px; font-weight: 700; color: var(--vsrp-blue); margin-bottom: 12px; }
@@ -274,13 +274,15 @@
         tg.MainButton.color = '#ff7a00';
         tg.MainButton.textColor = '#ffffff';
 
-        // УПРАВЛЕНИЕ ЭКРАНОМ ЗАГРУЗКИ
+        // Валидация. Где находится пользователь, внутри телеги или обычный браузер?
+
+        // Управление экраном загрузки
         window.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 const loader = document.getElementById('loading-screen');
                 loader.style.opacity = '0';
                 loader.style.visibility = 'hidden';
-            }, 2500); 
+            }, 2000); 
         });
 
         const SHIP_METADATA = {
@@ -294,7 +296,7 @@
         let currentShipId = '';
         let selectedDate = '';
         let selectedSeats = [];
-        let ticketIdToCancel = null; // Переменная для хранения ID отменяемого билета
+        let ticketIdToCancel = null;
 
         // Парсинг состояния 
         function parseUrlState() {
@@ -323,11 +325,14 @@
             renderTicketsLists();
         }
 
-        document.getElementById('btn-start-catalog').addEventListener('click', function() {
-            document.getElementById('intro-page').style.display = 'none';
-            document.getElementById('catalog-page').style.display = 'block';
-            document.getElementById('profile-btn').style.display = 'flex';
-        });
+        // Интро кнопки купить билеты
+        document.getElementById('btn-start-catalog').onclick = function() {
+            try {
+                document.getElementById('intro-page').style.display = 'none';
+                document.getElementById('catalog-page').style.display = 'block';
+                document.getElementById('profile-btn').style.display = 'flex';
+            } catch (err) { alert("Сбой перехода: " + err); }
+        };
 
         function renderCatalog() {
             const container = document.getElementById('dynamic-ships-catalog');
@@ -419,7 +424,7 @@
                         seat.classList.add('occupied');
                     } else {
                         const num = seatNumber;
-                        seat.addEventListener('click', function () { toggleSeat(this, num); });
+                        seat.onclick = function() { toggleSeat(this, num); };
                     }
                     seatMap.appendChild(seat);
                     seatNumber++;
@@ -442,6 +447,7 @@
         function updateMainButton() {
             if (selectedSeats.length > 0) {
                 const tour = DATABASE_TOURS.find(t => t.shipId === currentShipId && t.date === selectedDate);
+                if (!tour) return;
                 const cost = selectedSeats.length * tour.price;
                 tg.MainButton.setText(`ОФОРМИТЬ (${selectedSeats.length} МЕСТ) ЗА ${cost.toLocaleString('ru-RU')} ₽`);
                 tg.MainButton.show();
@@ -450,33 +456,39 @@
             }
         }
 
-        tg.MainButton.onClick(function() {
-            const tour = DATABASE_TOURS.find(t => t.shipId === currentShipId && t.date === selectedDate);
-            const cost = selectedSeats.length * tour.price;
-
-            if (userBalance < cost) {
-                if (tg.sendData && tg.platform !== 'unknown') {
-                    tg.showAlert('Недостаточно средств на балансе. Пожалуйста, пополните счёт.');
-                } else {
-                    alert('Недостаточно средств на балансе.');
-                }
-                return;
-            }
-
-            document.getElementById('confirm-details').innerHTML = `
-                <b>Судно:</b> ${tour.title}<br>
-                <b>Маршрут:</b> ${tour.route}<br>
-                <b>Дата отправления:</b> ${selectedDate}<br>
-                <b>Номера мест:</b> ${selectedSeats.join(', ')}<br>
-                <b>Сумма к списанию:</b> <span style="color:var(--vsrp-accent); font-weight:bold;">${cost.toLocaleString('ru-RU')} ₽</span>
-            `;
-            document.getElementById('cabinet-overlay').classList.add('active');
-            document.getElementById('confirm-modal').classList.add('active');
-        });
-
-        document.getElementById('btn-confirm-pay').addEventListener('click', function() {
+        // Клик главной кнопки телеграмма: Проверяем баланс и открываем модалку
+        tg.onEvent('mainButtonClicked', function() {
             try {
                 const tour = DATABASE_TOURS.find(t => t.shipId === currentShipId && t.date === selectedDate);
+                if (!tour) { alert('Ошибка: рейс не найден'); return; }
+                const cost = selectedSeats.length * tour.price;
+
+                if (userBalance < cost) {
+                    if (IS_TELEGRAM) {
+                        tg.showAlert('Недостаточно средств на балансе. Пожалуйста, пополните счёт.');
+                    } else {
+                        alert('Недостаточно средств на балансе.');
+                    }
+                    return;
+                }
+
+                document.getElementById('confirm-details').innerHTML = `
+                    <b>Судно:</b> ${tour.title}<br>
+                    <b>Маршрут:</b> ${tour.route}<br>
+                    <b>Дата отправления:</b> ${selectedDate}<br>
+                    <b>Номера мест:</b> ${selectedSeats.join(', ')}<br>
+                    <b>Сумма к списанию:</b> <span style="color:var(--vsrp-accent); font-weight:bold;">${cost.toLocaleString('ru-RU')} ₽</span>
+                `;
+                document.getElementById('cabinet-overlay').classList.add('active');
+                document.getElementById('confirm-modal').classList.add('active');
+            } catch (err) { alert("Ошибка при обработке заказа: " + err); }
+        });
+
+        // Финальная оплата: Отправляем данные боту
+        document.getElementById('btn-confirm-pay').onclick = function() {
+            try {
+                const tour = DATABASE_TOURS.find(t => t.shipId === currentShipId && t.date === selectedDate);
+                if (!tour) return;
                 
                 const payload = {
                     action: 'purchase',
@@ -491,43 +503,41 @@
                 document.getElementById('confirm-modal').classList.remove('active');
                 document.getElementById('cabinet-overlay').classList.remove('active');
 
-                if (tg.sendData && typeof tg.sendData === 'function' && tg.platform !== 'unknown') {
+                if (IS_TELEGRAM) {
                     tg.sendData(JSON.stringify(payload));
                 } else {
-                    alert("Имитация покупки завершена успешно.");
+                    alert("Имитация покупки завершена.\nДанные отправлены на сервер:\n" + JSON.stringify(payload));
                     document.getElementById('detail-page').style.display = 'none';
                     document.getElementById('catalog-page').style.display = 'block';
                     document.getElementById('navbar').style.display = 'flex';
                     tg.BackButton.hide();
                     tg.MainButton.hide();
                 }
-            } catch (error) {
-                alert("Ошибка: " + error);
-            }
-        });
+            } catch (err) { alert("Критическая ошибка платежа: " + err); }
+        };
 
-        // 🔥 ФИКС ОТМЕНЫ БИЛЕТА (Кастомное окно вместо заблокированного tg.showConfirm)
+        // Блок отмены билета из личного кабинета
         function cancelTicket(ticketId) {
-            ticketIdToCancel = ticketId; // Запоминаем ID билета
-            document.getElementById('cancel-modal').classList.add('active'); // Показываем нашу модалку
+            ticketIdToCancel = ticketId; 
+            document.getElementById('cancel-modal').classList.add('active'); 
         }
 
-        // Кнопка "Назад" в модалке отмены
-        document.getElementById('btn-no-cancel').addEventListener('click', function() {
+        document.getElementById('btn-no-cancel').onclick = function() {
             document.getElementById('cancel-modal').classList.remove('active');
-        });
+        };
 
-        // Кнопка "Да, отменить" в модалке отмены
-        document.getElementById('btn-yes-cancel').addEventListener('click', function() {
-            document.getElementById('cancel-modal').classList.remove('active');
-            document.getElementById('cabinet-overlay').classList.remove('active');
+        document.getElementById('btn-yes-cancel').onclick = function() {
+            try {
+                document.getElementById('cancel-modal').classList.remove('active');
+                document.getElementById('cabinet-overlay').classList.remove('active');
 
-            if (tg.sendData && typeof tg.sendData === 'function' && tg.platform !== 'unknown') {
-                tg.sendData(JSON.stringify({ action: 'cancel_ticket', ticketId: ticketIdToCancel }));
-            } else {
-                alert("Имитация: билет успешно отменен, средства возвращены на баланс.");
-            }
-        });
+                if (IS_TELEGRAM) {
+                    tg.sendData(JSON.stringify({ action: 'cancel_ticket', ticketId: ticketIdToCancel }));
+                } else {
+                    alert("Имитация: билет успешно отменен, средства возвращены на ваш баланс.");
+                }
+            } catch (err) { alert("Ошибка отмены: " + err); }
+        };
 
         function renderTicketsLists() {
             const activeContainer = document.getElementById('active-tickets-list');
@@ -590,6 +600,7 @@
             }
         }
 
+        // Системные обработчики кнопок
         tg.BackButton.onClick(function() {
             document.getElementById('detail-page').style.display = 'none';
             document.getElementById('catalog-page').style.display = 'block';
@@ -601,11 +612,11 @@
         document.getElementById('btn-topup').onclick = function() {
             const amt = parseInt(document.getElementById('topup-input').value);
             if (!amt || amt < 100) { 
-                if (tg.sendData && tg.platform !== 'unknown') tg.showAlert('Минимальная сумма зачисления — 100 ₽.');
+                if (IS_TELEGRAM) tg.showAlert('Минимальная сумма зачисления — 100 ₽.');
                 else alert('Минимальная сумма зачисления — 100 ₽.');
                 return; 
             }
-            if (tg.sendData && tg.platform !== 'unknown') {
+            if (IS_TELEGRAM) {
                 tg.sendData(JSON.stringify({ action: 'topup', amount: amt }));
             } else {
                 alert(`Вызов окна оплаты на сумму ${amt} руб.`);
@@ -625,13 +636,13 @@
         }
 
         document.getElementById('drawer-close').onclick = closeCabinet;
+        document.getElementById('btn-cancel-pay').onclick = closeCabinet;
         
         document.getElementById('btn-exit-app').onclick = function() { 
-            if (tg.sendData && tg.platform !== 'unknown') tg.close();
+            if (IS_TELEGRAM) tg.close();
             else alert("Закрытие доступно только внутри Telegram.");
         };
         
-        // Умное закрытие по клику мимо окошек
         document.getElementById('cabinet-overlay').onclick = function() {
             const isConfirmOpen = document.getElementById('confirm-modal').classList.contains('active');
             const isCancelOpen = document.getElementById('cancel-modal').classList.contains('active');
