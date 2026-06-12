@@ -636,11 +636,40 @@
             color: var(--vsrp-accent);
             margin-top: 6px;
         }
+
+        /* --- ОКНО ПОДТВЕРЖДЕНИЯ ПОКУПКИ --- */
+        .confirm-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: white;
+            padding: 24px;
+            border-radius: var(--radius-md);
+            z-index: 300;
+            width: 90%;
+            max-width: 320px;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+        }
+
+        .confirm-modal.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .confirm-title { font-size: 18px; font-weight: 700; color: var(--vsrp-blue); margin-bottom: 12px; }
+        .confirm-details { font-size: 14px; color: var(--text-dark); margin-bottom: 20px; line-height: 1.6; background: var(--vsrp-light); padding: 12px; border-radius: 8px;}
+        .confirm-actions { display: flex; gap: 10px; }
+        .btn-confirm { flex: 1; background: var(--vsrp-accent); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-cancel { flex: 1; background: #e2e8f0; color: var(--text-dark); border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <!-- Шапка с логотипом и кнопкой личного кабинета -->
     <header class="navbar" id="navbar">
         <div class="navbar-logo">
             <div class="navbar-logo-icon">⚓</div>
@@ -652,7 +681,6 @@
         </button>
     </header>
 
-    <!-- Страница каталога рейсов -->
     <main id="catalog-page" class="container">
         <h1 class="section-title">Популярные рейсы</h1>
         <p class="section-subtitle">Восточно-Сибирское речное пароходство</p>
@@ -688,7 +716,6 @@
         </article>
     </main>
 
-    <!-- Страница деталей рейса и выбора мест -->
     <section id="detail-page">
         <div class="detail-hero">
             <img id="detail-img" src="" alt="Фото судна">
@@ -713,8 +740,17 @@
         </div>
     </section>
 
-    <!-- Оверлей и шторка личного кабинета -->
     <div class="overlay" id="cabinet-overlay"></div>
+
+    <div class="confirm-modal" id="confirm-modal">
+        <div class="confirm-title">Подтверждение заказа</div>
+        <div class="confirm-details" id="confirm-details"></div>
+        <div class="confirm-actions">
+            <button class="btn-cancel" id="btn-cancel-pay">Отмена</button>
+            <button class="btn-confirm" id="btn-confirm-pay">Оплатить</button>
+        </div>
+    </div>
+
     <aside class="cabinet-drawer" id="cabinet-drawer" role="dialog" aria-label="Личный кабинет">
         <div class="drawer-handle"></div>
         <div class="drawer-header">
@@ -722,7 +758,6 @@
             <button class="drawer-close" id="drawer-close" aria-label="Закрыть">✕</button>
         </div>
         <div class="drawer-body">
-            <!-- Блок профиля: имя из Telegram или кнопка входа -->
             <div class="profile-card" id="profile-card">
                 <div class="profile-avatar" id="profile-avatar">?</div>
                 <div class="profile-name" id="profile-name">Гость</div>
@@ -745,7 +780,6 @@
                 <span style="font-size: 28px;">💳</span>
             </div>
 
-            <!-- Список купленных билетов -->
             <div class="tickets-section">
                 <h3 class="tickets-section-title">🎫 Мои билеты</h3>
                 <div id="tickets-list">
@@ -755,24 +789,24 @@
                     </div>
                 </div>
             </div>
+
+            <button id="btn-refresh" style="width: 100%; padding: 12px; background: #eef2f7; color: var(--vsrp-blue); border: none; border-radius: 12px; font-weight: bold; margin-top: 16px; cursor: pointer;">
+                🔄 Обновить баланс
+            </button>
+            
+            <button id="btn-exit-app" style="width: 100%; padding: 12px; background: #fee2e2; color: #ef4444; border: none; border-radius: 12px; font-weight: bold; margin-top: 10px; font-size: 14px; cursor: pointer;">
+                🚪 Выйти из приложения
+            </button>
+
         </div>
     </aside>
 
     <script>
         /* ============================================================
-         *  ИНИЦИАЛИЗАЦИЯ TELEGRAM WEB APP API
-         *  Документация: https://core.telegram.org/bots/webapps
+         * ИНИЦИАЛИЗАЦИЯ TELEGRAM WEB APP API
          * ============================================================ */
-
-        /** @type {Telegram.WebApp} Объект Telegram Mini App */
         const tg = window.Telegram.WebApp;
 
-        /**
-         * Настраивает внешний вид и поведение Mini App при запуске.
-         * expand() — разворачивает приложение на всю высоту экрана.
-         * setHeaderColor() — красит системную шапку Telegram в фирменный синий.
-         * MainButton.color — задаёт оранжевый цвет главной кнопки покупки.
-         */
         function initTelegramWebApp() {
             tg.ready();
             tg.expand();
@@ -784,10 +818,8 @@
         initTelegramWebApp();
 
         /* ============================================================
-         *  СОСТОЯНИЕ ПРИЛОЖЕНИЯ
+         * СОСТОЯНИЕ ПРИЛОЖЕНИЯ
          * ============================================================ */
-
-        /** Каталог рейсов с ценами и описаниями */
         const SHIPS = {
             barguzin: {
                 name: 'Теплоход «Баргузин»',
@@ -807,24 +839,15 @@
             }
         };
 
-       /** Демо-баланс пользователя (в рублях) */
         let userBalance = parseInt(localStorage.getItem('vsrp_balance')) || 10000;
-
-        /** Массив купленных билетов */
-        // Читаем из памяти, а если там пусто — создаем пустой массив
         let purchasedTickets = JSON.parse(localStorage.getItem('vsrp_tickets')) || [];
-
-        /** Текущий выбранный рейс */
         let currentShipId = '';
         let currentPrice = 0;
-
-        /** Номера выбранных мест в текущем рейсе */
         let selectedSeats = [];
 
         /* ============================================================
-         *  DOM-ЭЛЕМЕНТЫ
+         * DOM-ЭЛЕМЕНТЫ
          * ============================================================ */
-
         const catalogPage = document.getElementById('catalog-page');
         const detailPage = document.getElementById('detail-page');
         const navbar = document.getElementById('navbar');
@@ -835,24 +858,23 @@
         const ticketsEmptyEl = document.getElementById('tickets-empty');
 
         /* ============================================================
-         *  ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ (Telegram initDataUnsafe)
+         * ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ И БАЛАНС
          * ============================================================ */
-
-        /**
-         * Загружает данные пользователя из Telegram WebApp.
-         * tg.initDataUnsafe.user содержит first_name, last_name, username, photo_url.
-         * Вне Telegram (браузер / GitHub Pages) user будет undefined — показываем кнопку входа.
-         */
         function loadTelegramUser() {
-            // Читаем параметры из ссылки
             const urlParams = new URLSearchParams(window.location.search);
             const nameFromUrl = urlParams.get('name');
-            const balanceFromUrl = urlParams.get('balance'); // <--- СВЕЖИЙ БАЛАНС ИЗ ПОСТГРЕСА
+            const balanceFromUrl = parseInt(urlParams.get('balance')); 
             
-            if (balanceFromUrl) {
-                userBalance = parseInt(balanceFromUrl);
-                renderBalance();
+            let savedBalance = parseInt(localStorage.getItem('vsrp_balance'));
+
+            // Умная логика баланса: если с бэкенда пришла свежая сумма, которая больше сохраненной, берем её
+            if (!isNaN(balanceFromUrl) && (!savedBalance || balanceFromUrl > savedBalance)) {
+                userBalance = balanceFromUrl;
+                localStorage.setItem('vsrp_balance', userBalance);
+            } else if (!isNaN(savedBalance)) {
+                userBalance = savedBalance;
             }
+            renderBalance();
             
             const user = tg.initDataUnsafe?.user;
             const avatarEl = document.getElementById('profile-avatar');
@@ -880,20 +902,9 @@
             }
         }
 
-        /**
-         * Обработчик кнопки «Войти через Telegram».
-         * В реальном боте здесь можно вызвать tg.openTelegramLink() или OAuth.
-         * В Mini App пользователь уже авторизован при открытии из бота.
-         */
         function handleTelegramLogin() {
-            tg.showAlert(
-                'Откройте приложение через Telegram-бота ВСРП, чтобы автоматически войти в личный кабинет.'
-            );
+            tg.showAlert('Откройте приложение через Telegram-бота ВСРП, чтобы автоматически войти в личный кабинет.');
         }
-
-        /* ============================================================
-         *  ЛИЧНЫЙ КАБИНЕТ — ШТОРКА
-         * ============================================================ */
 
         function openCabinet() {
             cabinetOverlay.classList.add('active');
@@ -908,66 +919,32 @@
         }
 
         /* ============================================================
-         *  БАЛАНС — СПИСАНИЕ И ОТОБРАЖЕНИЕ
+         * ФИНАНСЫ И БИЛЕТЫ
          * ============================================================ */
-
-        /**
-         * Форматирует число как сумму в рублях с пробелами-разделителями.
-         * @param {number} amount — сумма в рублях
-         * @returns {string} Отформатированная строка, например «10 000 ₽»
-         */
         function formatRubles(amount) {
             return amount.toLocaleString('ru-RU') + ' ₽';
         }
 
-        /**
-         * Обновляет отображение баланса в шторке личного кабинета.
-         */
         function renderBalance() {
             balanceAmountEl.textContent = formatRubles(userBalance);
         }
 
-        /**
-         * Списывает сумму покупки с демо-баланса пользователя.
-         * Возвращает true при успехе, false если средств недостаточно.
-         *
-         * @param {number} amount — сумма к списанию в рублях
-         * @returns {boolean} Успешно ли прошло списание
-         */
         function deductBalance(amount) {
-            if (amount <= 0) return false;
-            if (userBalance < amount) return false;
-
+            if (amount <= 0 || userBalance < amount) return false;
             userBalance -= amount;
             renderBalance();
             return true;
         }
 
-        /**
-         * Проверяет, достаточно ли средств на балансе для покупки.
-         * @param {number} amount — требуемая сумма
-         * @returns {boolean}
-         */
         function hasEnoughBalance(amount) {
             return userBalance >= amount;
         }
 
-        /* ============================================================
-         *  БИЛЕТЫ — ДОБАВЛЕНИЕ И ОТОБРАЖЕНИЕ
-         * ============================================================ */
-
-        /**
-         * Добавляет купленный билет в список «Мои билеты».
-         * @param {Object} ticket — { ship, seats, price, date }
-         */
         function addTicket(ticket) {
             purchasedTickets.unshift(ticket);
             renderTickets();
         }
 
-        /**
-         * Перерисовывает список билетов в личном кабинете.
-         */
         function renderTickets() {
             if (purchasedTickets.length === 0) {
                 ticketsListEl.innerHTML = '';
@@ -979,11 +956,8 @@
             ticketsEmptyEl.style.display = 'none';
             ticketsListEl.innerHTML = purchasedTickets.map(function (ticket) {
                 const seatsStr = ticket.seats.sort(function (a, b) { return a - b; }).join(', ');
-                const dateStr = ticket.date.toLocaleString('ru-RU', {
-                    day: 'numeric',
-                    month: 'long',
-                    hour: '2-digit',
-                    minute: '2-digit'
+                const dateStr = new Date(ticket.date).toLocaleString('ru-RU', {
+                    day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'
                 });
 
                 return (
@@ -996,7 +970,6 @@
             }).join('');
         }
 
-        /** Экранирует HTML для безопасного вывода */
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
@@ -1004,13 +977,8 @@
         }
 
         /* ============================================================
-         *  НАВИГАЦИЯ: КАТАЛОГ ↔ ДЕТАЛИ
+         * НАВИГАЦИЯ И ВЫБОР МЕСТ
          * ============================================================ */
-
-        /**
-         * Открывает страницу деталей рейса и схему салона.
-         * Показывает tg.BackButton для возврата в каталог.
-         */
         function openShip(shipId) {
             const ship = SHIPS[shipId];
             if (!ship) return;
@@ -1026,7 +994,6 @@
             document.getElementById('detail-img').src = ship.img;
             document.getElementById('detail-img').alt = ship.name;
 
-            // 🔥 Читаем занятые места из памяти телефона или берем дефолтные
             let currentOccupied = JSON.parse(localStorage.getItem('vsrp_occupied_' + shipId)) || ship.occupiedSeats;
             generateSeats(currentOccupied);
 
@@ -1037,10 +1004,6 @@
             tg.BackButton.show();
         }
 
-        /**
-         * Закрывает страницу деталей и возвращает в каталог.
-         * Скрывает tg.BackButton и tg.MainButton.
-         */
         function closeDetail() {
             detailPage.style.display = 'none';
             catalogPage.style.display = 'block';
@@ -1050,14 +1013,6 @@
             tg.MainButton.hide();
         }
 
-        /* ============================================================
-         *  СХЕМА САЛОНА — ГЕНЕРАЦИЯ И ВЫБОР МЕСТ
-         * ============================================================ */
-
-        /**
-         * Генерирует интерактивную сетку мест: 4 ряда × (2 + проход + 2).
-         * @param {number[]} occupiedSeats — номера уже занятых мест
-         */
         function generateSeats(occupiedSeats) {
             const seatMap = document.getElementById('seat-map');
             seatMap.innerHTML = '';
@@ -1092,13 +1047,8 @@
             }
         }
 
-        /**
-         * Переключает выбор места (выбрать / снять выбор).
-         * Обновляет tg.MainButton с актуальной суммой.
-         */
         function toggleSeat(seatElement, seatNumber) {
             const index = selectedSeats.indexOf(seatNumber);
-
             if (index !== -1) {
                 selectedSeats.splice(index, 1);
                 seatElement.classList.remove('selected');
@@ -1106,21 +1056,13 @@
                 selectedSeats.push(seatNumber);
                 seatElement.classList.add('selected');
             }
-
             updateMainButton();
         }
 
-        /**
-         * Показывает или скрывает главную кнопку Telegram (MainButton).
-         * Текст формируется динамически: «КУПИТЬ (X МЕСТ) ЗА Y ₽».
-         * Кнопка видна ТОЛЬКО при выборе хотя бы одного места.
-         */
         function updateMainButton() {
             if (selectedSeats.length > 0) {
                 const totalPrice = selectedSeats.length * currentPrice;
-                tg.MainButton.setText(
-                    'КУПИТЬ (' + selectedSeats.length + ' МЕСТ) ЗА ' + totalPrice.toLocaleString('ru-RU') + ' ₽'
-                );
+                tg.MainButton.setText('КУПИТЬ (' + selectedSeats.length + ' МЕСТ) ЗА ' + totalPrice.toLocaleString('ru-RU') + ' ₽');
                 tg.MainButton.show();
             } else {
                 tg.MainButton.hide();
@@ -1128,51 +1070,49 @@
         }
 
         /* ============================================================
-         *  ПОКУПКА БИЛЕТА
+         * ПОКУПКА БИЛЕТА (ДВА ШАГА: МОДАЛКА -> ОПЛАТА)
          * ============================================================ */
-
-        /**
-         * Обрабатывает нажатие на tg.MainButton — полный цикл покупки:
-         * 1) Проверка баланса
-         * 2) Списание средств
-         * 3) Добавление билета в «Мои билеты»
-         * 4) Отправка данных в Python-бэкенд через tg.sendData()
-         */
+        
+        // ШАГ 1: Показываем наше красивое окно подтверждения
         function handlePurchase() {
             const ship = SHIPS[currentShipId];
             if (!ship || selectedSeats.length === 0) return;
 
             const totalPrice = selectedSeats.length * currentPrice;
-            const seatsCopy = selectedSeats.slice();
 
             if (!hasEnoughBalance(totalPrice)) {
-                tg.showAlert('Недостаточно средств. Нажмите "Пополнить" в личном кабинете.');
+                tg.showAlert('Недостаточно средств. Пополните баланс в личном кабинете.');
                 return;
             }
 
-            const deducted = deductBalance(totalPrice);
-            if (!deducted) {
-                tg.showAlert('Ошибка списания средств. Попробуйте снова.');
-                return;
-            }
+            const detailsHtml = `
+                <b>Рейс:</b> ${ship.name}<br>
+                <b>Маршрут:</b> ${ship.route}<br>
+                <b>Места:</b> ${selectedSeats.join(', ')}<br>
+                <div style="margin-top:10px; font-size:16px;"><b>К списанию:</b> <span style="color:var(--vsrp-accent); font-weight:bold;">${formatRubles(totalPrice)}</span></div>
+            `;
+            document.getElementById('confirm-details').innerHTML = detailsHtml;
+            
+            document.getElementById('cabinet-overlay').classList.add('active'); // Затемняем фон
+            document.getElementById('confirm-modal').classList.add('active');   // Показываем окно
+        }
 
-            // 💾 СОХРАНЯЕМ НОВЫЙ БАЛАНС В ПАМЯТЬ
+        // ШАГ 2: Финальная логика покупки и отправка в Питона (приложение закроется)
+        function executeFinalPurchase() {
+            const ship = SHIPS[currentShipId];
+            const totalPrice = selectedSeats.length * currentPrice;
+            const seatsCopy = selectedSeats.slice();
+
+            // Списываем и сохраняем локально
+            deductBalance(totalPrice);
             localStorage.setItem('vsrp_balance', userBalance);
 
-            const ticket = {
-                ship: ship.name,
-                route: ship.route,
-                seats: seatsCopy,
-                price: totalPrice,
-                date: new Date()
-            };
-
+            // Добавляем билет
+            const ticket = { ship: ship.name, route: ship.route, seats: seatsCopy, price: totalPrice, date: new Date() };
             addTicket(ticket);
-
-            // 💾 СОХРАНЯЕМ БИЛЕТЫ В ПАМЯТЬ
             localStorage.setItem('vsrp_tickets', JSON.stringify(purchasedTickets));
 
-            // 💾 СОХРАНЯЕМ ЗАНЯТЫЕ МЕСТА (чтобы их нельзя было купить второй раз)
+            // Занимаем места локально
             let globalOccupied = JSON.parse(localStorage.getItem('vsrp_occupied_' + currentShipId)) || ship.occupiedSeats;
             globalOccupied = globalOccupied.concat(seatsCopy);
             localStorage.setItem('vsrp_occupied_' + currentShipId, JSON.stringify(globalOccupied));
@@ -1183,49 +1123,32 @@
                 shipId: currentShipId,
                 route: ship.route,
                 seats: seatsCopy,
-                price: totalPrice,
-                pricePerSeat: currentPrice,
-                user: tg.initDataUnsafe?.user || null,
-                timestamp: new Date().toISOString(),
-                initDataString: tg.initData
+                price: totalPrice
             };
 
-            const successMessage =
-                'Билет оформлен!\n' +
-                ship.name + '\n' +
-                'Места: ' + seatsCopy.join(', ') + '\n' +
-                'Сумма: ' + formatRubles(totalPrice);
-
-            tg.showAlert(successMessage, function () {
-                tg.sendData(JSON.stringify(payload));
-                closeDetail();
-            });
+            // Скрываем окно и отправляем данные (WebApp закроется)
+            document.getElementById('confirm-modal').classList.remove('active');
+            document.getElementById('cabinet-overlay').classList.remove('active');
+            tg.sendData(JSON.stringify(payload)); 
         }
 
         /* ============================================================
-         *  TELEGRAM API — ОБРАБОТЧИКИ КНОПОК
+         * ОБРАБОТЧИКИ КНОПОК
          * ============================================================ */
 
-        /**
-         * tg.BackButton — системная кнопка «Назад» в шапке Telegram.
-         * Появляется при переходе в детали рейса, возвращает в каталог.
-         */
-        tg.BackButton.onClick(function () {
-            closeDetail();
-        });
-
-        /** tg.MainButton — главная кнопка действия внизу экрана Telegram */
-        tg.MainButton.onClick(function () {
-            handlePurchase();
-        });
-
-        /* ============================================================
-         * ПРИВЯЗКА СОБЫТИЙ UI
-         * ============================================================ */
+        tg.BackButton.onClick(function () { closeDetail(); });
+        tg.MainButton.onClick(function () { handlePurchase(); });
 
         document.getElementById('profile-btn').addEventListener('click', openCabinet);
         document.getElementById('drawer-close').addEventListener('click', closeCabinet);
-        cabinetOverlay.addEventListener('click', closeCabinet);
+        
+        // Закрытие шторки при клике на оверлей, НО если открыта модалка - оверлей не закрывает ничего
+        cabinetOverlay.addEventListener('click', function() {
+            if (!document.getElementById('confirm-modal').classList.contains('active')) {
+                closeCabinet();
+            }
+        });
+        
         document.getElementById('btn-telegram-login').addEventListener('click', handleTelegramLogin);
 
         document.querySelectorAll('.ship-card').forEach(function (card) {
@@ -1234,38 +1157,45 @@
             });
         });
 
-        // 🔥 ВОТ ОН, НАШ НОВЫЙ ОБРАБОТЧИК КНОПКИ ПОПОЛНЕНИЯ
+        // Кнопка НАСТОЯЩЕГО пополнения
         document.getElementById('btn-topup').addEventListener('click', function() {
             const inputEl = document.getElementById('topup-input');
             const customAmount = parseInt(inputEl.value);
 
-            // Защита от дурака: проверяем, что ввели нормальное число
             if (!customAmount || customAmount <= 0) {
                 tg.showAlert('Пожалуйста, введите сумму для пополнения.');
                 return;
             }
-
-            // Минимальный лимит Telegram для счетов
             if (customAmount < 100) {
                 tg.showAlert('Минимальная сумма пополнения — 100 ₽.');
                 return;
             }
 
-            // Закрываем Mini App и отправляем боту кастомную сумму
-            tg.sendData(JSON.stringify({ 
-                action: 'topup', 
-                amount: customAmount 
-            }));
-            
-            // Очищаем поле ввода
+            // Отправляем боту запрос на инвойс
+            tg.sendData(JSON.stringify({ action: 'topup', amount: customAmount }));
             inputEl.value = '';
+        });
+
+        // Кнопки модального окна подтверждения
+        document.getElementById('btn-cancel-pay').addEventListener('click', () => {
+            document.getElementById('confirm-modal').classList.remove('active');
+            document.getElementById('cabinet-overlay').classList.remove('active');
+        });
+        document.getElementById('btn-confirm-pay').addEventListener('click', executeFinalPurchase);
+
+        // Кнопка обновления баланса
+        document.getElementById('btn-refresh').addEventListener('click', () => {
+            window.location.reload();
+        });
+
+        // Кнопка выхода из приложения
+        document.getElementById('btn-exit-app').addEventListener('click', () => {
+            tg.close();
         });
 
         /* ============================================================
          * СТАРТ ПРИЛОЖЕНИЯ
          * ============================================================ */
-
-        // Запускаем все начальные функции
         loadTelegramUser();
         renderBalance();
         renderTickets();
