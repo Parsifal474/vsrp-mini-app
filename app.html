@@ -10,13 +10,11 @@
     <style>
         :root {
             --vsrp-blue: #004789;
-            --vsrp-blue-dark: #003366;
+            --vsrp-blue-dark: #002444;
             --vsrp-light: #f4f8fd;
             --vsrp-accent: #ff7a00;
             --text-dark: #1a1a1a;
             --text-gray: #6b7280;
-            --glass-bg: rgba(255, 255, 255, 0.72);
-            --glass-border: rgba(255, 255, 255, 0.45);
             --shadow-sm: 0 4px 16px rgba(0, 71, 137, 0.08);
             --shadow-md: 0 8px 32px rgba(0, 71, 137, 0.12);
             --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.15);
@@ -28,20 +26,45 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--vsrp-light); color: var(--text-dark); min-height: 100vh; overflow-x: hidden; }
 
-        /* --- ЭКРАН ЗАГРУЗКИ --- */
-        #loading-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        /* --- ЭКРАН ЗАГРУЗКИ (МЕЖГАЛАКТИЧЕСКИЙ) --- */
+        #splash-screen {
+            position: fixed; inset: 0; z-index: 9999;
             background: linear-gradient(135deg, var(--vsrp-blue) 0%, var(--vsrp-blue-dark) 100%);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 9999; color: white; transition: opacity 0.4s ease, visibility 0.4s ease;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: white; transition: opacity 0.5s ease;
         }
         .spinner {
-            width: 48px; height: 48px; border: 4px solid rgba(255, 255, 255, 0.15);
+            width: 50px; height: 50px; border: 4px solid rgba(255, 255, 255, 0.1);
             border-top-color: white; border-radius: 50%;
-            animation: spin 0.8s linear infinite; margin-bottom: 20px;
+            animation: spin 0.8s linear infinite; margin-bottom: 24px;
         }
-        .loading-text { font-size: 14px; font-weight: 500; letter-spacing: 1px; opacity: 0.85; }
+        .splash-title { font-size: 20px; font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; }
+        .splash-subtitle { font-size: 12px; opacity: 0.7; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* --- ПРЕМИАЛЬНЫЙ ЭКРАН ПРИВЕТСТВИЯ (ИНТРО) --- */
+        #intro-page {
+            display: flex; flex-direction: column; justify-content: flex-end;
+            min-height: 100vh; position: relative; overflow: hidden;
+        }
+        .intro-bg {
+            position: absolute; inset: 0; z-index: 1;
+            background: url('https://images.unsplash.com/photo-1544365558-35aa4afcf11f?auto=format&fit=crop&w=800&q=80') center/cover no-repeat;
+        }
+        .intro-bg::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(0,36,68,0.1) 0%, rgba(0,36,68,0.95) 100%);
+        }
+        .intro-content { position: relative; z-index: 2; padding: 40px 24px 60px; text-align: left; color: white; }
+        .intro-logo { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.15); padding: 8px 16px; border-radius: 30px; font-size: 14px; font-weight: 700; backdrop-filter: blur(10px); margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.2); }
+        .intro-title { font-size: 32px; font-weight: 700; line-height: 1.1; margin-bottom: 16px; }
+        .intro-desc { font-size: 15px; line-height: 1.6; opacity: 0.85; margin-bottom: 40px; max-width: 90%; }
+        .btn-start {
+            width: 100%; background: var(--vsrp-accent); color: white; border: none; padding: 18px;
+            border-radius: 16px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 24px rgba(255, 122, 0, 0.4);
+            transition: transform 0.2s;
+        }
+        .btn-start:active { transform: scale(0.96); }
 
         /* --- НАВИГАЦИЯ --- */
         .navbar {
@@ -53,20 +76,6 @@
         .profile-btn {
             background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25);
             color: white; padding: 8px 14px; border-radius: 30px; font-size: 12px; font-weight: 600; cursor: pointer;
-        }
-
-        /* --- ЭКРАН ПРИВЕТСТВИЯ --- */
-        #intro-page {
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            min-height: calc(100vh - 60px); padding: 30px 20px; text-align: center;
-            background: linear-gradient(180deg, var(--vsrp-light) 0%, #ffffff 100%);
-        }
-        .intro-image { width: 100%; max-width: 280px; border-radius: 16px; margin-bottom: 24px; box-shadow: var(--shadow-md); }
-        .intro-title { color: var(--vsrp-blue); font-size: 24px; font-weight: 700; margin-bottom: 16px; line-height: 1.3; }
-        .intro-desc { color: var(--text-gray); font-size: 14px; line-height: 1.6; margin-bottom: 32px; max-width: 400px; }
-        .btn-main-action {
-            background: var(--vsrp-accent); color: white; border: none; padding: 16px 36px;
-            border-radius: 30px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: var(--shadow-sm);
         }
 
         /* --- КАТАЛОГ --- */
@@ -158,22 +167,26 @@
 </head>
 <body>
 
-    <div id="loading-screen">
+    <div id="splash-screen">
         <div class="spinner"></div>
-        <div class="loading-text">Инициализация системы ВСРП...</div>
+        <div class="splash-title">ВСРП</div>
+        <div class="splash-subtitle">Инициализация системы</div>
     </div>
 
-    <header class="navbar" id="navbar">
-        <div class="navbar-logo"><span>ВСРП ПАССАЖИР</span></div>
-        <button class="profile-btn" id="profile-btn" style="display: none;">Личный кабинет</button>
-    </header>
-
     <main id="intro-page">
-        <img src="https://vsrp.ru/files/img_cache/Page/1/61d7e657520091/small_67da5594a62c9.png" alt="ВСРП" class="intro-image">
-        <h1 class="intro-title">Восточно-Сибирское<br>речное пароходство</h1>
-        <p class="intro-desc">Официальный цифровой сервис бронирования билетов. Пассажирские рейсы и регулярные маршруты по озеру Байкал и реке Ангара со строгим контролем безопасности.</p>
-        <button class="btn-main-action" id="btn-start-catalog">Купить билеты</button>
+        <div class="intro-bg"></div>
+        <div class="intro-content">
+            <div class="intro-logo">⚓ Официальный сервис</div>
+            <h1 class="intro-title">Ваше путешествие начинается здесь</h1>
+            <p class="intro-desc">Регулярные пассажирские и туристические маршруты по озеру Байкал и реке Ангара.</p>
+            <button class="btn-start" id="btn-start-catalog">Выбрать маршрут</button>
+        </div>
     </main>
+
+    <header class="navbar" id="navbar" style="display: none;">
+        <div class="navbar-logo"><span>ВСРП ПАССАЖИР</span></div>
+        <button class="profile-btn" id="profile-btn">Личный кабинет</button>
+    </header>
 
     <main id="catalog-page" class="container" style="display: none;">
         <h1 class="section-title">Каталог маршрутов</h1>
@@ -219,13 +232,13 @@
         </div>
         <div class="drawer-body">
             <div class="profile-card">
-                <div class="profile-name" id="profile-name">Загрузка данных...</div>
-                <div class="profile-username" id="profile-username">Синхронизация...</div>
+                <div class="profile-name" id="profile-name">Пассажир</div>
+                <div class="profile-username" id="profile-username">Загрузка...</div>
             </div>
 
             <div class="balance-card">
                 <div>
-                    <div class="balance-label">Личный счёт пассажира</div>
+                    <div class="balance-label">Счёт пассажира</div>
                     <div class="balance-amount" id="balance-amount">0 ₽</div>
                     <div style="display: flex; gap: 8px; margin-top: 12px;">
                         <input type="number" id="topup-input" placeholder="Сумма" style="width: 90px; padding: 8px; border-radius: 8px; border: 1px solid var(--glass-border); font-weight: 600;">
@@ -240,7 +253,7 @@
             </div>
 
             <div class="tickets-section" style="background: #f8fafc;">
-                <h3 class="tickets-section-title" style="color: #64748b;">Архив и история поездок</h3>
+                <h3 class="tickets-section-title" style="color: #64748b;">Архив поездок</h3>
                 <div id="archive-tickets-list"></div>
             </div>
 
@@ -249,17 +262,17 @@
     </aside>
 
     <div class="confirm-modal" id="confirm-modal">
-        <div class="confirm-title">Подтверждение оплаты</div>
+        <div class="confirm-title">Оформление билета</div>
         <div class="confirm-details" id="confirm-details"></div>
         <div class="confirm-actions">
             <button class="btn-cancel" id="btn-cancel-pay">Отмена</button>
-            <button class="btn-confirm" id="btn-confirm-pay">Оплатить билет</button>
+            <button class="btn-confirm" id="btn-confirm-pay">Оплатить</button>
         </div>
     </div>
 
     <div class="confirm-modal" id="cancel-modal">
-        <div class="confirm-title" style="color: #ef4444;">Отмена билета</div>
-        <div class="confirm-details">Вы действительно хотите отменить этот рейс? Средства за билет будут возвращены на ваш баланс.</div>
+        <div class="confirm-title" style="color: #ef4444;">Отмена рейса</div>
+        <div class="confirm-details">Вы действительно хотите отменить этот рейс? Средства за билет будут мгновенно возвращены на ваш баланс.</div>
         <div class="confirm-actions">
             <button class="btn-cancel" id="btn-no-cancel">Назад</button>
             <button class="btn-confirm" id="btn-yes-cancel" style="background: #ef4444;">Да, отменить</button>
@@ -274,18 +287,13 @@
         tg.MainButton.color = '#ff7a00';
         tg.MainButton.textColor = '#ffffff';
 
-        // 🛡 АБСОЛЮТНО БЕЗОПАСНАЯ ПРОВЕРКА ТЕЛЕГРАМА БЕЗ ГЛОБАЛЬНЫХ ПЕРЕМЕННЫХ
-        function isTgApp() {
-            return (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData !== undefined && window.Telegram.WebApp.initData !== '');
-        }
-
-        // УПРАВЛЕНИЕ ЭКРАНОМ ЗАГРУЗКИ
-        window.addEventListener('DOMContentLoaded', () => {
+        // УПРАВЛЕНИЕ ЭКРАНОМ ЗАГРУЗКИ (2.5 сек)
+        window.addEventListener('load', () => {
             setTimeout(() => {
-                const loader = document.getElementById('loading-screen');
-                loader.style.opacity = '0';
-                loader.style.visibility = 'hidden';
-            }, 2000); 
+                const splash = document.getElementById('splash-screen');
+                splash.style.opacity = '0';
+                setTimeout(() => splash.style.display = 'none', 500);
+            }, 2500);
         });
 
         const SHIP_METADATA = {
@@ -301,10 +309,11 @@
         let selectedSeats = [];
         let ticketIdToCancel = null;
 
-        // Парсинг состояния 
+        // ПАРСИНГ ДАННЫХ
         function parseUrlState() {
             const params = new URLSearchParams(window.location.search);
             
+            // Если открыли в браузере для тестов - даем тестовые данные. Для телеги - реальные.
             if (!params.get('tours')) {
                 userBalance = 15000;
                 DATABASE_TOURS = [
@@ -320,9 +329,7 @@
                     
                     const parsedTickets = JSON.parse(decodeURIComponent(params.get('tickets')));
                     if (Array.isArray(parsedTickets)) DATABASE_TICKETS = parsedTickets;
-                } catch(e) {
-                    console.error("Ошибка чтения данных:", e);
-                }
+                } catch(e) {}
             }
             
             document.getElementById('balance-amount').textContent = userBalance.toLocaleString('ru-RU') + ' ₽';
@@ -331,12 +338,11 @@
             renderTicketsLists();
         }
 
+        // КНОПКА СТАРТА ИЗ ИНТРО
         document.getElementById('btn-start-catalog').onclick = function() {
-            try {
-                document.getElementById('intro-page').style.display = 'none';
-                document.getElementById('catalog-page').style.display = 'block';
-                document.getElementById('profile-btn').style.display = 'flex';
-            } catch (err) { alert("Ошибка интерфейса: " + err); }
+            document.getElementById('intro-page').style.display = 'none';
+            document.getElementById('navbar').style.display = 'flex';
+            document.getElementById('catalog-page').style.display = 'block';
         };
 
         function renderCatalog() {
@@ -397,8 +403,6 @@
             };
 
             document.getElementById('catalog-page').style.display = 'none';
-            document.getElementById('intro-page').style.display = 'none';
-            document.getElementById('navbar').style.display = 'none';
             document.getElementById('detail-page').style.display = 'block';
             tg.BackButton.show();
         }
@@ -461,67 +465,56 @@
             }
         }
 
-        // --- КЛИК ПО ГЛАВНОЙ КНОПКЕ ТЕЛЕГРАМА ---
+        // --- КЛИК ПО КНОПКЕ "ОФОРМИТЬ" В ТЕЛЕГРАМЕ ---
         tg.MainButton.onClick(function() {
-            try {
-                const tour = DATABASE_TOURS.find(t => t.shipId === currentShipId && t.date === selectedDate);
-                if (!tour) { alert('Ошибка: рейс не найден'); return; }
-                const cost = selectedSeats.length * tour.price;
+            const tour = DATABASE_TOURS.find(t => t.shipId === currentShipId && t.date === selectedDate);
+            if (!tour) return;
+            const cost = selectedSeats.length * tour.price;
 
-                if (userBalance < cost) {
-                    if (isTgApp()) {
-                        tg.showAlert('Недостаточно средств на балансе. Пожалуйста, пополните счёт.');
-                    } else {
-                        alert('Недостаточно средств на балансе.');
-                    }
-                    return;
-                }
+            if (userBalance < cost) {
+                if (tg.initData) tg.showAlert('Недостаточно средств на балансе. Пожалуйста, пополните счёт.');
+                else alert('Недостаточно средств на балансе.');
+                return;
+            }
 
-                document.getElementById('confirm-details').innerHTML = `
-                    <b>Судно:</b> ${tour.title}<br>
-                    <b>Маршрут:</b> ${tour.route}<br>
-                    <b>Дата:</b> ${selectedDate}<br>
-                    <b>Номера мест:</b> ${selectedSeats.join(', ')}<br>
-                    <b>К списанию:</b> <span style="color:var(--vsrp-accent); font-weight:bold;">${cost.toLocaleString('ru-RU')} ₽</span>
-                `;
-                document.getElementById('cabinet-overlay').classList.add('active');
-                document.getElementById('confirm-modal').classList.add('active');
-            } catch (err) { alert("Ошибка при обработке заказа: " + err.message); }
+            document.getElementById('confirm-details').innerHTML = `
+                <b>Судно:</b> ${tour.title}<br>
+                <b>Маршрут:</b> ${tour.route}<br>
+                <b>Дата:</b> ${selectedDate}<br>
+                <b>Места:</b> ${selectedSeats.join(', ')}<br>
+                <b>К списанию:</b> <span style="color:var(--vsrp-accent); font-weight:bold;">${cost.toLocaleString('ru-RU')} ₽</span>
+            `;
+            document.getElementById('cabinet-overlay').classList.add('active');
+            document.getElementById('confirm-modal').classList.add('active');
         });
 
-        // --- ФИНАЛЬНАЯ КНОПКА "ОПЛАТИТЬ" ВНУТРИ МОДАЛКИ ---
+        // --- ЖЕЛЕЗОБЕТОННАЯ КНОПКА "ОПЛАТИТЬ" ---
         document.getElementById('btn-confirm-pay').onclick = function() {
-            try {
-                const tour = DATABASE_TOURS.find(t => t.shipId === currentShipId && t.date === selectedDate);
-                if (!tour) return;
-                
-                const payload = {
-                    action: 'purchase',
-                    shipId: currentShipId,
-                    ship: tour.title,
-                    route: tour.route,
-                    date: selectedDate,
-                    seats: selectedSeats,
-                    price: selectedSeats.length * tour.price
-                };
+            const tour = DATABASE_TOURS.find(t => t.shipId === currentShipId && t.date === selectedDate);
+            if (!tour) return;
+            
+            const payload = {
+                action: 'purchase',
+                shipId: currentShipId,
+                ship: tour.title,
+                route: tour.route,
+                date: selectedDate,
+                seats: selectedSeats,
+                price: selectedSeats.length * tour.price
+            };
 
-                document.getElementById('confirm-modal').classList.remove('active');
-                document.getElementById('cabinet-overlay').classList.remove('active');
+            document.getElementById('confirm-modal').classList.remove('active');
+            document.getElementById('cabinet-overlay').classList.remove('active');
 
-                if (isTgApp()) {
-                    window.Telegram.WebApp.sendData(JSON.stringify(payload));
-                } else {
-                    alert("Имитация покупки завершена (Режим браузера).\nОтправлено боту:\n" + JSON.stringify(payload));
-                    document.getElementById('detail-page').style.display = 'none';
-                    document.getElementById('catalog-page').style.display = 'block';
-                    document.getElementById('navbar').style.display = 'flex';
-                    tg.BackButton.hide();
-                    tg.MainButton.hide();
-                }
-            } catch (err) { alert("Критическая ошибка платежа: " + err.message); }
+            // Прямая, чистая отправка данных в бот
+            if (tg.initData) {
+                tg.sendData(JSON.stringify(payload));
+            } else {
+                alert("Это браузер. В Telegram данные уйдут в бот:\n" + JSON.stringify(payload));
+            }
         };
 
-        // --- БЛОК ОТМЕНЫ БИЛЕТОВ ---
+        // --- ОТМЕНА БИЛЕТОВ ---
         function cancelTicket(ticketId) {
             ticketIdToCancel = ticketId; 
             document.getElementById('cancel-modal').classList.add('active'); 
@@ -531,17 +524,16 @@
             document.getElementById('cancel-modal').classList.remove('active');
         };
 
+        // ЖЕЛЕЗОБЕТОННАЯ КНОПКА ОТМЕНЫ
         document.getElementById('btn-yes-cancel').onclick = function() {
-            try {
-                document.getElementById('cancel-modal').classList.remove('active');
-                document.getElementById('cabinet-overlay').classList.remove('active');
+            document.getElementById('cancel-modal').classList.remove('active');
+            document.getElementById('cabinet-overlay').classList.remove('active');
 
-                if (isTgApp()) {
-                    window.Telegram.WebApp.sendData(JSON.stringify({ action: 'cancel_ticket', ticketId: ticketIdToCancel }));
-                } else {
-                    alert("Имитация: билет успешно отменен, средства возвращены на ваш баланс.");
-                }
-            } catch (err) { alert("Ошибка отмены: " + err.message); }
+            if (tg.initData) {
+                tg.sendData(JSON.stringify({ action: 'cancel_ticket', ticketId: ticketIdToCancel }));
+            } else {
+                alert("Это браузер. В Telegram билет отменится.");
+            }
         };
 
         function renderTicketsLists() {
@@ -551,8 +543,8 @@
             activeContainer.innerHTML = ''; archiveContainer.innerHTML = '';
 
             if (DATABASE_TICKETS.length === 0) {
-                activeContainer.innerHTML = '<div style="text-align:center; color:var(--text-gray); font-size:12px; padding:10px;">Активных билетов не обнаружено</div>';
-                archiveContainer.innerHTML = '<div style="text-align:center; color:var(--text-gray); font-size:12px; padding:10px;">Архив поездок пуст</div>';
+                activeContainer.innerHTML = '<div style="text-align:center; color:var(--text-gray); font-size:12px; padding:10px;">Активных билетов нет</div>';
+                archiveContainer.innerHTML = '<div style="text-align:center; color:var(--text-gray); font-size:12px; padding:10px;">Архив пуст</div>';
                 return;
             }
 
@@ -598,7 +590,7 @@
                 usernameEl.textContent = user.username ? '@' + user.username : 'ID: ' + user.id;
             } else if (nameFromUrl) {
                 nameEl.textContent = decodeURIComponent(nameFromUrl);
-                usernameEl.textContent = 'Авторизован через систему бота';
+                usernameEl.textContent = 'Авторизован';
             } else {
                 nameEl.textContent = 'Пассажир ВСРП';
                 usernameEl.textContent = 'Режим демонстрации';
@@ -609,22 +601,23 @@
         tg.BackButton.onClick(function() {
             document.getElementById('detail-page').style.display = 'none';
             document.getElementById('catalog-page').style.display = 'block';
-            document.getElementById('navbar').style.display = 'flex';
             tg.BackButton.hide();
             tg.MainButton.hide();
         });
 
+        // ЖЕЛЕЗОБЕТОННАЯ КНОПКА ПОПОЛНЕНИЯ
         document.getElementById('btn-topup').onclick = function() {
             const amt = parseInt(document.getElementById('topup-input').value);
             if (!amt || amt < 100) { 
-                if (isTgApp()) tg.showAlert('Минимальная сумма зачисления — 100 ₽.');
+                if (tg.initData) tg.showAlert('Минимальная сумма зачисления — 100 ₽.');
                 else alert('Минимальная сумма зачисления — 100 ₽.');
                 return; 
             }
-            if (isTgApp()) {
-                window.Telegram.WebApp.sendData(JSON.stringify({ action: 'topup', amount: amt }));
+            
+            if (tg.initData) {
+                tg.sendData(JSON.stringify({ action: 'topup', amount: amt }));
             } else {
-                alert(`Вызов окна оплаты на сумму ${amt} руб.`);
+                alert(`Это браузер. В Telegram бот выставит счет на ${amt} руб.`);
             }
         };
 
@@ -644,7 +637,7 @@
         document.getElementById('btn-cancel-pay').onclick = closeCabinet;
         
         document.getElementById('btn-exit-app').onclick = function() { 
-            if (isTgApp()) window.Telegram.WebApp.close();
+            if (tg.initData) tg.close();
             else alert("Закрытие доступно только внутри Telegram.");
         };
         
