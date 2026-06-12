@@ -9,76 +9,41 @@
 
     <style>
         :root {
-            --vsrp-blue: #004789;
-            --vsrp-blue-dark: #002444;
-            --vsrp-light: #f4f8fd;
-            --vsrp-accent: #ff7a00;
-            --text-dark: #1a1a1a;
-            --text-gray: #6b7280;
-            --shadow-sm: 0 4px 16px rgba(0, 71, 137, 0.08);
-            --shadow-md: 0 8px 32px rgba(0, 71, 137, 0.12);
-            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.15);
-            --radius-sm: 12px;
-            --radius-md: 20px;
-            --radius-lg: 24px;
+            --vsrp-blue: #004789; --vsrp-blue-dark: #002444; --vsrp-light: #f4f8fd; --vsrp-accent: #ff7a00;
+            --text-dark: #1a1a1a; --text-gray: #6b7280;
+            --shadow-sm: 0 4px 16px rgba(0, 71, 137, 0.08); --shadow-md: 0 8px 32px rgba(0, 71, 137, 0.12); --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.15);
+            --radius-sm: 12px; --radius-md: 20px; --radius-lg: 24px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--vsrp-light); color: var(--text-dark); min-height: 100vh; overflow-x: hidden; }
 
-        /* --- ЭКРАН ЗАГРУЗКИ (МЕЖГАЛАКТИЧЕСКИЙ) --- */
+        /* --- ЗАГРУЗКА И ИНТРО --- */
         #splash-screen {
-            position: fixed; inset: 0; z-index: 9999;
-            background: linear-gradient(135deg, var(--vsrp-blue) 0%, var(--vsrp-blue-dark) 100%);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: white; transition: opacity 0.5s ease;
+            position: fixed; inset: 0; z-index: 9999; background: linear-gradient(135deg, var(--vsrp-blue) 0%, var(--vsrp-blue-dark) 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; transition: opacity 0.5s ease;
         }
-        .spinner {
-            width: 50px; height: 50px; border: 4px solid rgba(255, 255, 255, 0.1);
-            border-top-color: white; border-radius: 50%;
-            animation: spin 0.8s linear infinite; margin-bottom: 24px;
-        }
+        .spinner { width: 50px; height: 50px; border: 4px solid rgba(255, 255, 255, 0.1); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 24px; }
         .splash-title { font-size: 20px; font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; }
         .splash-subtitle { font-size: 12px; opacity: 0.7; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* --- ПРЕМИАЛЬНЫЙ ЭКРАН ПРИВЕТСТВИЯ (ИНТРО) --- */
-        #intro-page {
-            display: flex; flex-direction: column; justify-content: flex-end;
-            min-height: 100vh; position: relative; overflow: hidden;
-        }
-        .intro-bg {
-            position: absolute; inset: 0; z-index: 1;
-            background: url('https://images.unsplash.com/photo-1544365558-35aa4afcf11f?auto=format&fit=crop&w=800&q=80') center/cover no-repeat;
-        }
-        .intro-bg::after {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(180deg, rgba(0,36,68,0.1) 0%, rgba(0,36,68,0.95) 100%);
-        }
+        #intro-page { display: flex; flex-direction: column; justify-content: flex-end; min-height: 100vh; position: relative; overflow: hidden; }
+        .intro-bg { position: absolute; inset: 0; z-index: 1; background: url('https://images.unsplash.com/photo-1544365558-35aa4afcf11f?auto=format&fit=crop&w=800&q=80') center/cover no-repeat; }
+        .intro-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,36,68,0.1) 0%, rgba(0,36,68,0.95) 100%); }
         .intro-content { position: relative; z-index: 2; padding: 40px 24px 60px; text-align: left; color: white; }
         .intro-logo { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.15); padding: 8px 16px; border-radius: 30px; font-size: 14px; font-weight: 700; backdrop-filter: blur(10px); margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.2); }
         .intro-title { font-size: 32px; font-weight: 700; line-height: 1.1; margin-bottom: 16px; }
         .intro-desc { font-size: 15px; line-height: 1.6; opacity: 0.85; margin-bottom: 40px; max-width: 90%; }
-        .btn-start {
-            width: 100%; background: var(--vsrp-accent); color: white; border: none; padding: 18px;
-            border-radius: 16px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 24px rgba(255, 122, 0, 0.4);
-            transition: transform 0.2s;
-        }
+        .btn-start { width: 100%; background: var(--vsrp-accent); color: white; border: none; padding: 18px; border-radius: 16px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 24px rgba(255, 122, 0, 0.4); transition: transform 0.2s; }
         .btn-start:active { transform: scale(0.96); }
 
         /* --- НАВИГАЦИЯ --- */
-        .navbar {
-            background: linear-gradient(135deg, var(--vsrp-blue) 0%, var(--vsrp-blue-dark) 100%);
-            color: white; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between;
-            box-shadow: var(--shadow-md); position: sticky; top: 0; z-index: 100;
-        }
+        .navbar { background: linear-gradient(135deg, var(--vsrp-blue) 0%, var(--vsrp-blue-dark) 100%); color: white; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow-md); position: sticky; top: 0; z-index: 100; }
         .navbar-logo { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; }
-        .profile-btn {
-            background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25);
-            color: white; padding: 8px 14px; border-radius: 30px; font-size: 12px; font-weight: 600; cursor: pointer;
-        }
+        .profile-btn { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); color: white; padding: 8px 14px; border-radius: 30px; font-size: 12px; font-weight: 600; cursor: pointer; }
 
-        /* --- КАТАЛОГ --- */
+        /* --- КАТАЛОГ И ДЕТАЛИ --- */
         #catalog-page { padding: 20px; padding-bottom: 90px; }
         .section-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; color: var(--vsrp-blue); }
         .section-subtitle { font-size: 13px; color: var(--text-gray); margin-bottom: 20px; font-weight: 500; }
@@ -94,7 +59,6 @@
         .ship-price span { font-size: 12px; font-weight: 500; color: var(--text-gray); }
         .btn-select { background: var(--vsrp-blue); color: white; border: none; padding: 10px 20px; border-radius: 30px; font-size: 13px; font-weight: 600; cursor: pointer; }
 
-        /* --- ЭКРАН ВЫБОРА МЕСТ --- */
         #detail-page { display: none; background: var(--vsrp-light); min-height: 100vh; padding-bottom: 90px; }
         .detail-hero { height: 260px; position: relative; }
         .detail-hero img { width: 100%; height: 100%; object-fit: cover; }
@@ -102,8 +66,6 @@
         .detail-hero-title { font-size: 24px; font-weight: 700; }
         .detail-hero-price { font-weight: 600; margin-top: 6px; font-size: 15px; opacity: 0.9; }
         .detail-body { padding: 24px 20px 40px; border-radius: var(--radius-lg) var(--radius-lg) 0 0; background: var(--vsrp-light); position: relative; top: -24px; }
-        .detail-desc { font-size: 14px; line-height: 1.7; color: var(--text-gray); margin-bottom: 24px; background: white; padding: 18px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
-
         .date-selector-block { background: white; border-radius: var(--radius-md); padding: 16px; margin-bottom: 20px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 8px; }
         .date-label { font-size: 14px; font-weight: 700; color: var(--vsrp-blue); }
         .vsrp-select { width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #cbd5e1; outline: none; font-size: 14px; font-weight: 600; color: var(--text-dark); background: white; }
@@ -204,8 +166,6 @@
         </div>
 
         <div class="detail-body">
-            <p id="detail-desc" class="detail-desc"></p>
-
             <div class="date-selector-block">
                 <label class="date-label" for="date-select">Выберите дату отправления:</label>
                 <select id="date-select" class="vsrp-select"></select>
@@ -233,7 +193,7 @@
         <div class="drawer-body">
             <div class="profile-card">
                 <div class="profile-name" id="profile-name">Пассажир</div>
-                <div class="profile-username" id="profile-username">Загрузка...</div>
+                <div class="profile-username" id="profile-username">Пассажир Telegram</div>
             </div>
 
             <div class="balance-card">
@@ -287,7 +247,7 @@
         tg.MainButton.color = '#ff7a00';
         tg.MainButton.textColor = '#ffffff';
 
-        // УПРАВЛЕНИЕ ЭКРАНОМ ЗАГРУЗКИ (2.5 сек)
+        // Загрузочный экран
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
@@ -295,11 +255,6 @@
                 setTimeout(() => splash.style.display = 'none', 500);
             }, 2500);
         });
-
-        const SHIP_METADATA = {
-            barguzin: { desc: 'Скоростное комфортабельное судно на воздушной каверне. Панорамные окна, салон самолетного типа.', img: 'https://images.unsplash.com/photo-1544365558-35aa4afcf11f?auto=format&fit=crop&w=800&q=80' },
-            hivus: { desc: 'Судно на воздушной подушке (амфибия). Идеально подходит для передвижения по льду Байкала и мелководью.', img: 'https://images.unsplash.com/photo-1518182170546-076616fdcbdd?auto=format&fit=crop&w=800&q=80' }
-        };
 
         let userBalance = 0;
         let DATABASE_TOURS = [];
@@ -309,28 +264,15 @@
         let selectedSeats = [];
         let ticketIdToCancel = null;
 
-        // ПАРСИНГ ДАННЫХ
         function parseUrlState() {
             const params = new URLSearchParams(window.location.search);
-            
-            // Если открыли в браузере для тестов - даем тестовые данные. Для телеги - реальные.
-            if (!params.get('tours')) {
-                userBalance = 15000;
-                DATABASE_TOURS = [
-                    { shipId: 'barguzin', title: 'Теплоход «Баргузин»', route: 'Иркутск — Большие Коты', price: 1500, date: '15.06.2026', occupied: [3, 8] },
-                    { shipId: 'hivus', title: 'Хивус-10', route: 'Листвянка — Песчаная бухта', price: 6000, date: '16.06.2026', occupied: [1, 2, 5] }
-                ];
-                DATABASE_TICKETS = [];
-            } else {
-                userBalance = parseInt(params.get('balance')) || 0;
-                try {
-                    const parsedTours = JSON.parse(decodeURIComponent(params.get('tours')));
-                    if (Array.isArray(parsedTours)) DATABASE_TOURS = parsedTours;
-                    
-                    const parsedTickets = JSON.parse(decodeURIComponent(params.get('tickets')));
-                    if (Array.isArray(parsedTickets)) DATABASE_TICKETS = parsedTickets;
-                } catch(e) {}
-            }
+            userBalance = parseInt(params.get('balance')) || 0;
+            try {
+                const parsedTours = JSON.parse(decodeURIComponent(params.get('tours')));
+                if (Array.isArray(parsedTours)) DATABASE_TOURS = parsedTours;
+                const parsedTickets = JSON.parse(decodeURIComponent(params.get('tickets')));
+                if (Array.isArray(parsedTickets)) DATABASE_TICKETS = parsedTickets;
+            } catch(e) {}
             
             document.getElementById('balance-amount').textContent = userBalance.toLocaleString('ru-RU') + ' ₽';
             renderCatalog();
@@ -338,7 +280,6 @@
             renderTicketsLists();
         }
 
-        // КНОПКА СТАРТА ИЗ ИНТРО
         document.getElementById('btn-start-catalog').onclick = function() {
             document.getElementById('intro-page').style.display = 'none';
             document.getElementById('navbar').style.display = 'flex';
@@ -353,12 +294,11 @@
             DATABASE_TOURS.forEach(t => { if (!uniqueShips[t.shipId]) uniqueShips[t.shipId] = t; });
 
             Object.values(uniqueShips).forEach(ship => {
-                const meta = SHIP_METADATA[ship.shipId] || { desc: 'Пассажирский рейс ВСРП', img: 'https://images.unsplash.com/photo-1544365558-35aa4afcf11f?auto=format&fit=crop&w=800&q=80' };
                 container.innerHTML += `
                     <article class="ship-card" onclick="openShipDetails('${ship.shipId}')">
                         <div class="ship-img-wrapper">
                             <span class="ship-badge">РЕГУЛЯРНЫЙ РЕЙС</span>
-                            <img src="${meta.img}" class="ship-img" alt="">
+                            <img src="${ship.image}" class="ship-img" alt="">
                         </div>
                         <div class="ship-content">
                             <h2 class="ship-title">${ship.title}</h2>
@@ -382,12 +322,10 @@
             if(toursForShip.length === 0) return;
 
             const baseTour = toursForShip[0];
-            const meta = SHIP_METADATA[shipId] || { desc: '', img: '' };
 
             document.getElementById('detail-title').textContent = baseTour.title;
             document.getElementById('detail-price').textContent = baseTour.price.toLocaleString('ru-RU') + ' ₽ за место';
-            document.getElementById('detail-desc').textContent = meta.desc;
-            document.getElementById('detail-img').src = meta.img;
+            document.getElementById('detail-img').src = baseTour.image;
 
             const selectEl = document.getElementById('date-select');
             selectEl.innerHTML = toursForShip.map(t => `<option value="${t.date}">${t.date}</option>`).join('');
@@ -465,15 +403,13 @@
             }
         }
 
-        // --- КЛИК ПО КНОПКЕ "ОФОРМИТЬ" В ТЕЛЕГРАМЕ ---
         tg.MainButton.onClick(function() {
             const tour = DATABASE_TOURS.find(t => t.shipId === currentShipId && t.date === selectedDate);
             if (!tour) return;
             const cost = selectedSeats.length * tour.price;
 
             if (userBalance < cost) {
-                if (tg.initData) tg.showAlert('Недостаточно средств на балансе. Пожалуйста, пополните счёт.');
-                else alert('Недостаточно средств на балансе.');
+                tg.showAlert('Недостаточно средств на балансе. Пожалуйста, пополните счёт.');
                 return;
             }
 
@@ -488,7 +424,7 @@
             document.getElementById('confirm-modal').classList.add('active');
         });
 
-        // --- ЖЕЛЕЗОБЕТОННАЯ КНОПКА "ОПЛАТИТЬ" ---
+        // 🔥 КНОПКА ПОКУПКИ (Без браузерных симуляций)
         document.getElementById('btn-confirm-pay').onclick = function() {
             const tour = DATABASE_TOURS.find(t => t.shipId === currentShipId && t.date === selectedDate);
             if (!tour) return;
@@ -505,16 +441,11 @@
 
             document.getElementById('confirm-modal').classList.remove('active');
             document.getElementById('cabinet-overlay').classList.remove('active');
-
-            // Прямая, чистая отправка данных в бот
-            if (tg.initData) {
-                tg.sendData(JSON.stringify(payload));
-            } else {
-                alert("Это браузер. В Telegram данные уйдут в бот:\n" + JSON.stringify(payload));
-            }
+            
+            // Напрямую в бота
+            tg.sendData(JSON.stringify(payload));
         };
 
-        // --- ОТМЕНА БИЛЕТОВ ---
         function cancelTicket(ticketId) {
             ticketIdToCancel = ticketId; 
             document.getElementById('cancel-modal').classList.add('active'); 
@@ -524,16 +455,12 @@
             document.getElementById('cancel-modal').classList.remove('active');
         };
 
-        // ЖЕЛЕЗОБЕТОННАЯ КНОПКА ОТМЕНЫ
+        // 🔥 КНОПКА ОТМЕНЫ (Без браузерных симуляций)
         document.getElementById('btn-yes-cancel').onclick = function() {
             document.getElementById('cancel-modal').classList.remove('active');
             document.getElementById('cabinet-overlay').classList.remove('active');
-
-            if (tg.initData) {
-                tg.sendData(JSON.stringify({ action: 'cancel_ticket', ticketId: ticketIdToCancel }));
-            } else {
-                alert("Это браузер. В Telegram билет отменится.");
-            }
+            
+            tg.sendData(JSON.stringify({ action: 'cancel_ticket', ticketId: ticketIdToCancel }));
         };
 
         function renderTicketsLists() {
@@ -578,26 +505,17 @@
         }
 
         function renderProfile() {
-            const user = tg.initDataUnsafe?.user;
             const params = new URLSearchParams(window.location.search);
             const nameFromUrl = params.get('name');
-
             const nameEl = document.getElementById('profile-name');
             const usernameEl = document.getElementById('profile-username');
 
-            if (user) {
-                nameEl.textContent = [user.first_name, user.last_name].filter(Boolean).join(' ') || 'Пассажир ВСРП';
-                usernameEl.textContent = user.username ? '@' + user.username : 'ID: ' + user.id;
-            } else if (nameFromUrl) {
+            if (nameFromUrl) {
                 nameEl.textContent = decodeURIComponent(nameFromUrl);
-                usernameEl.textContent = 'Авторизован';
-            } else {
-                nameEl.textContent = 'Пассажир ВСРП';
-                usernameEl.textContent = 'Режим демонстрации';
+                usernameEl.textContent = 'Пассажир Telegram';
             }
         }
 
-        // Системные обработчики кнопок
         tg.BackButton.onClick(function() {
             document.getElementById('detail-page').style.display = 'none';
             document.getElementById('catalog-page').style.display = 'block';
@@ -605,20 +523,14 @@
             tg.MainButton.hide();
         });
 
-        // ЖЕЛЕЗОБЕТОННАЯ КНОПКА ПОПОЛНЕНИЯ
+        // 🔥 КНОПКА ПОПОЛНЕНИЯ (Без браузерных симуляций)
         document.getElementById('btn-topup').onclick = function() {
             const amt = parseInt(document.getElementById('topup-input').value);
             if (!amt || amt < 100) { 
-                if (tg.initData) tg.showAlert('Минимальная сумма зачисления — 100 ₽.');
-                else alert('Минимальная сумма зачисления — 100 ₽.');
+                tg.showAlert('Минимальная сумма зачисления — 100 ₽.');
                 return; 
             }
-            
-            if (tg.initData) {
-                tg.sendData(JSON.stringify({ action: 'topup', amount: amt }));
-            } else {
-                alert(`Это браузер. В Telegram бот выставит счет на ${amt} руб.`);
-            }
+            tg.sendData(JSON.stringify({ action: 'topup', amount: amt }));
         };
 
         document.getElementById('profile-btn').onclick = function() {
@@ -636,17 +548,15 @@
         document.getElementById('drawer-close').onclick = closeCabinet;
         document.getElementById('btn-cancel-pay').onclick = closeCabinet;
         
+        // 🔥 КНОПКА ЗАКРЫТИЯ ПРИЛОЖЕНИЯ
         document.getElementById('btn-exit-app').onclick = function() { 
-            if (tg.initData) tg.close();
-            else alert("Закрытие доступно только внутри Telegram.");
+            tg.close();
         };
         
         document.getElementById('cabinet-overlay').onclick = function() {
             const isConfirmOpen = document.getElementById('confirm-modal').classList.contains('active');
             const isCancelOpen = document.getElementById('cancel-modal').classList.contains('active');
-            if(!isConfirmOpen && !isCancelOpen) {
-                closeCabinet();
-            }
+            if(!isConfirmOpen && !isCancelOpen) closeCabinet();
         };
 
         parseUrlState();
