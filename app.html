@@ -732,11 +732,15 @@
                 </button>
             </div>
 
-            <!-- Демо-баланс -->
             <div class="balance-card">
                 <div>
                     <div class="balance-label">Баланс счёта</div>
-                    <div class="balance-amount" id="balance-amount">10 000 ₽</div>
+                    <div class="balance-amount" id="balance-amount">0 ₽</div>
+                    
+                    <div style="display: flex; gap: 8px; margin-top: 10px; align-items: center;">
+                        <input type="number" id="topup-input" placeholder="Сумма" style="width: 80px; padding: 6px; border-radius: 6px; border: 1px solid var(--glass-border); font-size: 13px; outline: none; background: rgba(255,255,255,0.8);">
+                        <button id="btn-topup" style="background: var(--vsrp-accent); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; transition: opacity 0.2s;">➕ Пополнить</button>
+                    </div>
                 </div>
                 <span style="font-size: 28px;">💳</span>
             </div>
@@ -803,11 +807,12 @@
             }
         };
 
-        /** Демо-баланс пользователя (в рублях) */
-        let userBalance = 10000;
+       /** Демо-баланс пользователя (в рублях) */
+        let userBalance = parseInt(localStorage.getItem('vsrp_balance')) || 10000;
 
         /** Массив купленных билетов */
-        let purchasedTickets = [];
+        // Читаем из памяти, а если там пусто — создаем пустой массив
+        let purchasedTickets = JSON.parse(localStorage.getItem('vsrp_tickets')) || [];
 
         /** Текущий выбранный рейс */
         let currentShipId = '';
@@ -839,26 +844,39 @@
          * Вне Telegram (браузер / GitHub Pages) user будет undefined — показываем кнопку входа.
          */
         function loadTelegramUser() {
+            // Читаем параметры из ссылки
+            const urlParams = new URLSearchParams(window.location.search);
+            const nameFromUrl = urlParams.get('name');
+            const balanceFromUrl = urlParams.get('balance'); // <--- СВЕЖИЙ БАЛАНС ИЗ ПОСТГРЕСА
+            
+            if (balanceFromUrl) {
+                userBalance = parseInt(balanceFromUrl);
+                renderBalance();
+            }
+            
+            const user = tg.initDataUnsafe?.user;
+            const avatarEl = document.getElementById('profile-avatar');
             const nameEl = document.getElementById('profile-name');
             const usernameEl = document.getElementById('profile-username');
             const loginBtn = document.getElementById('btn-telegram-login');
-            
-            if (!nameEl) return; // Защита от краша
 
-            // Достаем сырую ссылку, чтобы увидеть, дошли ли параметры
-            const search = window.location.search;
-            const urlParams = new URLSearchParams(search);
-            const nameFromUrl = urlParams.get('name');
-
-            if (nameFromUrl) {
-                // Если всё сработало
+            if (user) {
+                const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ');
+                nameEl.textContent = fullName || 'Пользователь Telegram';
+                if (user.username) usernameEl.textContent = '@' + user.username;
+                if (user.photo_url) avatarEl.innerHTML = '<img src="' + user.photo_url + '" alt="Аватар">';
+                else avatarEl.textContent = (user.first_name || '?').charAt(0).toUpperCase();
+                loginBtn.style.display = 'none';
+            } else if (nameFromUrl) {
                 nameEl.textContent = nameFromUrl;
-                usernameEl.textContent = '✅ Параметры дошли!';
-                if (loginBtn) loginBtn.style.display = 'none';
+                usernameEl.textContent = 'Авторизован через ВСРП бот';
+                avatarEl.textContent = nameFromUrl.charAt(0).toUpperCase();
+                loginBtn.style.display = 'none';
             } else {
-                // ЕСЛИ НЕ СРАБОТАЛО - выводим причину прямо на экран
-                nameEl.textContent = 'ПАРАМЕТРОВ НЕТ';
-                usernameEl.textContent = 'Сырой поиск: ' + (search || 'Пусто');
+                nameEl.textContent = 'Гость';
+                usernameEl.textContent = 'Войдите через Telegram';
+                avatarEl.textContent = '?';
+                loginBtn.style.display = 'inline-flex';
             }
         }
 
@@ -1008,7 +1026,9 @@
             document.getElementById('detail-img').src = ship.img;
             document.getElementById('detail-img').alt = ship.name;
 
-            generateSeats(ship.occupiedSeats);
+            // 🔥 Читаем занятые места из памяти телефона или берем дефолтные
+            let currentOccupied = JSON.parse(localStorage.getItem('vsrp_occupied_' + shipId)) || ship.occupiedSeats;
+            generateSeats(currentOccupied);
 
             catalogPage.style.display = 'none';
             navbar.style.display = 'none';
@@ -1126,7 +1146,7 @@
             const seatsCopy = selectedSeats.slice();
 
             if (!hasEnoughBalance(totalPrice)) {
-                tg.showAlert('Недостаточно средств. Пополните баланс в личном кабинете.');
+                tg.showAlert('Недостаточно средств. Нажмите "Пополнить" в личном кабинете.');
                 return;
             }
 
@@ -1135,6 +1155,9 @@
                 tg.showAlert('Ошибка списания средств. Попробуйте снова.');
                 return;
             }
+
+            // 💾 СОХРАНЯЕМ НОВЫЙ БАЛАНС В ПАМЯТЬ
+            localStorage.setItem('vsrp_balance', userBalance);
 
             const ticket = {
                 ship: ship.name,
@@ -1145,6 +1168,14 @@
             };
 
             addTicket(ticket);
+
+            // 💾 СОХРАНЯЕМ БИЛЕТЫ В ПАМЯТЬ
+            localStorage.setItem('vsrp_tickets', JSON.stringify(purchasedTickets));
+
+            // 💾 СОХРАНЯЕМ ЗАНЯТЫЕ МЕСТА (чтобы их нельзя было купить второй раз)
+            let globalOccupied = JSON.parse(localStorage.getItem('vsrp_occupied_' + currentShipId)) || ship.occupiedSeats;
+            globalOccupied = globalOccupied.concat(seatsCopy);
+            localStorage.setItem('vsrp_occupied_' + currentShipId, JSON.stringify(globalOccupied));
 
             const payload = {
                 action: 'purchase',
@@ -1165,11 +1196,6 @@
                 'Места: ' + seatsCopy.join(', ') + '\n' +
                 'Сумма: ' + formatRubles(totalPrice);
 
-            /**
-             * Сначала показываем подтверждение, затем отправляем данные.
-             * tg.sendData() передаёт JSON боту (обработчик web_app_data в Python)
-             * и закрывает Mini App — поэтому вызываем его в колбэке alert.
-             */
             tg.showAlert(successMessage, function () {
                 tg.sendData(JSON.stringify(payload));
                 closeDetail();
@@ -1194,7 +1220,7 @@
         });
 
         /* ============================================================
-         *  ПРИВЯЗКА СОБЫТИЙ UI
+         * ПРИВЯЗКА СОБЫТИЙ UI
          * ============================================================ */
 
         document.getElementById('profile-btn').addEventListener('click', openCabinet);
@@ -1208,41 +1234,38 @@
             });
         });
 
+        // 🔥 ВОТ ОН, НАШ НОВЫЙ ОБРАБОТЧИК КНОПКИ ПОПОЛНЕНИЯ
+        document.getElementById('btn-topup').addEventListener('click', function() {
+            const inputEl = document.getElementById('topup-input');
+            const customAmount = parseInt(inputEl.value);
+
+            // Защита от дурака: проверяем, что ввели нормальное число
+            if (!customAmount || customAmount <= 0) {
+                tg.showAlert('Пожалуйста, введите сумму для пополнения.');
+                return;
+            }
+
+            // Минимальный лимит Telegram для счетов
+            if (customAmount < 100) {
+                tg.showAlert('Минимальная сумма пополнения — 100 ₽.');
+                return;
+            }
+
+            // Закрываем Mini App и отправляем боту кастомную сумму
+            tg.sendData(JSON.stringify({ 
+                action: 'topup', 
+                amount: customAmount 
+            }));
+            
+            // Очищаем поле ввода
+            inputEl.value = '';
+        });
+
         /* ============================================================
-         *  СТАРТ ПРИЛОЖЕНИЯ
+         * СТАРТ ПРИЛОЖЕНИЯ
          * ============================================================ */
 
-        function loadTelegramUser() {
-            // Читаем имя из ссылки
-            const urlParams = new URLSearchParams(window.location.search);
-            const nameFromUrl = urlParams.get('name');
-            
-            const user = tg.initDataUnsafe?.user;
-            const avatarEl = document.getElementById('profile-avatar');
-            const nameEl = document.getElementById('profile-name');
-            const usernameEl = document.getElementById('profile-username');
-            const loginBtn = document.getElementById('btn-telegram-login');
-
-            if (user) {
-                const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ');
-                nameEl.textContent = fullName || 'Пользователь Telegram';
-                if (user.username) usernameEl.textContent = '@' + user.username;
-                if (user.photo_url) avatarEl.innerHTML = '<img src="' + user.photo_url + '" alt="Аватар">';
-                else avatarEl.textContent = (user.first_name || '?').charAt(0).toUpperCase();
-                loginBtn.style.display = 'none';
-            } else if (nameFromUrl) {
-                // Если Телеграм скрыл данные, берем имя, которое передал наш бот
-                nameEl.textContent = nameFromUrl;
-                usernameEl.textContent = 'Авторизован через ВСРП бот';
-                avatarEl.textContent = nameFromUrl.charAt(0).toUpperCase();
-                loginBtn.style.display = 'none';
-            } else {
-                nameEl.textContent = 'Гость';
-                usernameEl.textContent = 'Войдите через Telegram';
-                avatarEl.textContent = '?';
-                loginBtn.style.display = 'inline-flex';
-            }
-        }
+        // Запускаем все начальные функции
         loadTelegramUser();
         renderBalance();
         renderTickets();
